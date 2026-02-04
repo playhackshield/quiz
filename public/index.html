@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Quiz App</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-graduation-cap"></i> School Quiz App</h1>
+            <p class="subtitle">Interactieve quiz voor in de klas</p>
+        </div>
+
+        <div class="choice-container">
+            <a href="teacher.html" class="choice-card teacher">
+                <div class="card-icon">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <h2>Ik ben leraar</h2>
+                <p>Start een nieuwe quiz, stel vragen en beheer de sessie</p>
+                <div class="card-footer">
+                    <button class="btn btn-primary">Start Leraar Dashboard</button>
+                </div>
+            </a>
+
+            <a href="student.html" class="choice-card student">
+                <div class="card-icon">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <h2>Ik ben leerling</h2>
+                <p>Doe mee met een quiz via een 4-cijferige code</p>
+                <div class="card-footer">
+                    <button class="btn btn-secondary">Deelnemen als Leerling</button>
+                </div>
+            </a>
+        </div>
+
+        <div class="instructions">
+            <h3><i class="fas fa-info-circle"></i> Hoe werkt het?</h3>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <p>De leraar start een quiz sessie en krijgt een unieke code</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <p>Leerlingen gaan naar deze pagina en voeren de code in</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <p>De leraar stelt vragen die direct bij leerlingen verschijnen</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <p>Leerlingen beantwoorden op hun eigen apparaat</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <p>De leraar ziet live wie heeft geantwoord</p>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>Gemaakt voor gebruik in de klas • Werkt op alle devices • Realtime updates</p>
+        </footer>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    
+    <script src="js/firebase-config.js"></script>
+    <script>
+        // Anonieme login voor Firebase
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof auth !== 'undefined') {
+                auth.signInAnonymously()
+                    .then(() => console.log('Ingelogd bij Firebase'))
+                    .catch(error => console.error('Login fout:', error));
+            }
+        });
+    </script>
+</body>
+</html>
