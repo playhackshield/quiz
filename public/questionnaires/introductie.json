@@ -1,37 +1,38 @@
 [
   {
-    "nr": 1,
-    "type": "meerkeuze",
-    "vraag": "Wat is de hoofdstad van Nederland?",
-    "opties": ["Amsterdam", "Rotterdam", "Den Haag", "Utrecht"],
-    "correct": 0
-  },
-  {
-    "nr": 2,
     "type": "open",
-    "vraag": "Noem een rivier die door Nederland stroomt."
+    "vraag": "WAAR BEN JE GOED IN?"
   },
   {
-    "nr": 3,
-    "type": "ja/nee", 
-    "vraag": "Is de aarde rond?"
-  }
-]'>[
-  {
-    "nr": 1,
-    "type": "meerkeuze",
-    "vraag": "Wat is de hoofdstad van Nederland?",
-    "opties": ["Amsterdam", "Rotterdam", "Den Haag", "Utrecht"],
-    "correct": 0
-  },
-  {
-    "nr": 2,
     "type": "open",
-    "vraag": "Noem een rivier die door Nederland stroomt."
+    "vraag": "WAAR ZOU JIJ JE OP SCHOOL HET LIEFST MEE BEZIG WILLEN HOUDEN?"
   },
   {
-    "nr": 3,
-    "type": "ja/nee",
-    "vraag": "Is de aarde rond?"
+    "type": "open",
+    "vraag": "WAT IS JE FAVORIETE ONDERDEEL VAN SCHOOL (BIJVOORBEELD REKENEN, TAAL, LES OVER EMOTIES)?"
+  },
+  {
+    "type": "open",
+    "vraag": "WAT VIND JE HET MEEST LEUK?"
+  },
+  {
+    "type": "open",
+    "vraag": "WAT ZOUDEN ZE VEEL MEER OP SCHOOL MOETEN GEVEN?"
+  },
+  {
+    "type": "open", 
+    "vraag": "WAT VOOR SOORT SPELLEN ZOU JE WILLEN SPELEN IN DE KLAS?"
+  },
+  {
+    "type": "meerkeuze",
+    "vraag": "VIND JE HET LEUKER OM ALLEEN OF IN EEN GROEP TEGEN ELKAAR TE SPELEN?",
+    "opties": ["Alleen", "In een groep"],
+    "correct": 2
+  },
+  {
+    "type": "meerkeuze",
+    "vraag": "HOU JE MEER VAN SPELLETJES MET BEWEGING ERIN OF LIEVER IETS WAAR JE RUSTIG VOOR KUNT ZITTEN?",
+    "opties": ["Beweging", "Rustig zitten"],
+    "correct": 2
   }
 ]
