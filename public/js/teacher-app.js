@@ -211,11 +211,37 @@ updateSessionDisplay(sessionData) {
         studentCount: this.students.size
     });
     
-    document.getElementById('session-code').textContent = sessionData.code || this.currentSession?.code || '----';
-    document.getElementById('display-code').textContent = sessionData.code || this.currentSession?.code || '----';
-    document.getElementById('student-count').textContent = this.students.size;
-    document.getElementById('total-students').textContent = this.students.size;
-    document.getElementById('total-questions').textContent = this.questions.length;
+    // DEBUG: Check of elementen bestaan
+    const elements = {
+        sessionCode: document.getElementById('session-code'),
+        displayCode: document.getElementById('display-code'),
+        studentCount: document.getElementById('student-count'),
+        totalStudents: document.getElementById('total-students'),
+        totalQuestions: document.getElementById('total-questions')
+    };
+    
+    console.log("Elementen gevonden:", elements);
+    
+    // Alleen updaten als element bestaat
+    if (elements.sessionCode) {
+        elements.sessionCode.textContent = sessionData.code || this.currentSession?.code || '----';
+    }
+    
+    if (elements.displayCode) {
+        elements.displayCode.textContent = sessionData.code || this.currentSession?.code || '----';
+    }
+    
+    if (elements.studentCount) {
+        elements.studentCount.textContent = this.students.size;
+    }
+    
+    if (elements.totalStudents) {
+        elements.totalStudents.textContent = this.students.size;
+    }
+    
+    if (elements.totalQuestions) {
+        elements.totalQuestions.textContent = this.questions.length;
+    }
 }
     
     displayCurrentQuestion() {
