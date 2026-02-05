@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App - Leerling</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Join Screen -->
+        <div id="join-screen" class="screen">
+            <div class="header">
+                <h1><i class="fas fa-user-graduate"></i> Quiz Deelnemer</h1>
+                <p>Voer de code in die je van de leraar hebt gekregen</p>
+            </div>
+
+            <div class="card">
+                <h2><i class="fas fa-sign-in-alt"></i> Deelnemen aan Quiz</h2>
+                
+                <div class="form-group">
+                    <label for="session-code-input"><i class="fas fa-qrcode"></i> Sessie Code</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-key"></i>
+                        <input type="text" id="session-code-input" placeholder="Bijv: 1234" maxlength="4" inputmode="numeric">
+                    </div>
+                    <small class="hint">4-cijferige code van de leraar</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="student-name-input"><i class="fas fa-user"></i> Je Naam</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-signature"></i>
+                        <input type="text" id="student-name-input" placeholder="Voer je volledige naam in">
+                    </div>
+                    <small class="hint">Zo herkent de leraar je</small>
+                </div>
+
+                <div class="form-actions">
+                    <button id="join-btn" class="btn btn-primary btn-large">
+                        <i class="fas fa-play-circle"></i> Deelnemen aan Quiz
+                    </button>
+                    <a href="index.html" class="btn btn-secondary">
+                        <i class="fas fa-home"></i> Terug naar Start
+                    </a>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h3><i class="fas fa-info-circle"></i> Instructies:</h3>
+                <ol>
+                    <li>Vraag de 4-cijferige code aan je leraar</li>
+                    <li>Voer de code en je naam hierboven in</li>
+                    <li>Klik op "Deelnemen aan Quiz"</li>
+                    <li>Wacht tot de leraar een vraag stelt</li>
+                    <li>Beantwoord de vraag op je scherm</li>
+                </ol>
+            </div>
+
+            <div id="error-message" class="error-message hidden">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span id="error-text"></span>
+            </div>
+        </div>
+
+        <!-- Waiting Screen -->
+        <div id="waiting-screen" class="screen hidden">
+            <div class="waiting-content">
+                <div class="waiting-icon">
+                    <i class="fas fa-hourglass-half"></i>
+                </div>
+                <h2>Klaar voor de quiz!</h2>
+                <div class="student-info">
+                    <p><i class="fas fa-user"></i> <strong id="display-student-name">Leerling</strong></p>
+                    <p><i class="fas fa-qrcode"></i> Sessie: <strong id="display-session-code">----</strong></p>
+                </div>
+                <p class="waiting-text">Wacht tot de leraar de eerste vraag start...</p>
+                <div class="loading-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <button id="leave-session-btn" class="btn btn-danger">
+                    <i class="fas fa-sign-out-alt"></i> Verlaat Sessie
+                </button>
+            </div>
+        </div>
+
+        <!-- Question Screen -->
+        <div id="question-screen" class="screen hidden">
+            <div class="question-header">
+                <div class="question-info">
+                    <h2><i class="fas fa-question-circle"></i> Quiz Vraag</h2>
+                    <div class="question-meta">
+                        <span><i class="fas fa-user"></i> <strong id="current-student-name">Leerling</strong></span>
+                        <span><i class="fas fa-hashtag"></i> Vraag <strong id="question-number">1</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-container">
+                <div class="question-text" id="question-text">
+                    Vraag wordt geladen...
+                </div>
+
+                <!-- Multiple Choice Options -->
+                <div id="multiple-choice-options" class="options-container hidden">
+                    <!-- Options will be inserted here -->
+                </div>
+
+                <!-- Open Answer Input -->
+                <div id="open-answer-container" class="hidden">
+                    <textarea id="open-answer-input" placeholder="Typ je antwoord hier..." rows="4"></textarea>
+                    <small class="hint">Druk op Enter om een nieuwe regel te beginnen</small>
+                </div>
+
+                <!-- Yes/No Options -->
+                <div id="yesno-options" class="yesno-container hidden">
+                    <div class="yesno-option" data-answer="ja">
+                        <div class="yesno-icon">
+                            <i class="fas fa-thumbs-up"></i>
+                        </div>
+                        <div class="yesno-text">Ja</div>
+                    </div>
+                    <div class="yesno-option" data-answer="nee">
+                        <div class="yesno-icon">
+                            <i class="fas fa-thumbs-down"></i>
+                        </div>
+                        <div class="yesno-text">Nee</div>
+                    </div>
+                </div>
+
+                <!-- Answer Status -->
+                <div id="answer-status" class="answer-status hidden">
+                    <div class="status-success">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Je antwoord is opgeslagen!</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="submit-section">
+                <button id="submit-answer-btn" class="btn btn-primary btn-large">
+                    <i class="fas fa-paper-plane"></i> Verstuur Antwoord
+                </button>
+                <button id="change-answer-btn" class="btn btn-secondary hidden">
+                    <i class="fas fa-edit"></i> Antwoord Wijzigen
+                </button>
+            </div>
+
+            <!-- Session Info -->
+            <div class="session-info-footer">
+                <div class="info-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Geen tijdslimiet</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Je kunt je antwoord wijzigen tot de leraar verder gaat</span>
+                </div>
+                <button id="back-to-waiting-btn" class="btn btn-small">
+                    <i class="fas fa-arrow-left"></i> Terug naar overzicht
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="screen hidden">
+            <div class="loading-content">
+                <div class="loading-spinner"></div>
+                <h2>Verbinden...</h2>
+                <p>Even geduld alstublieft</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    
+    <!-- App JavaScript -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/student-app.js"></script>
+</body>
+</html>
