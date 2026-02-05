@@ -1,0 +1,37 @@
+[
+  {
+    "nr": 1,
+    "type": "meerkeuze",
+    "vraag": "Wat is de hoofdstad van Nederland?",
+    "opties": ["Amsterdam", "Rotterdam", "Den Haag", "Utrecht"],
+    "correct": 0
+  },
+  {
+    "nr": 2,
+    "type": "open",
+    "vraag": "Noem een rivier die door Nederland stroomt."
+  },
+  {
+    "nr": 3,
+    "type": "ja/nee", 
+    "vraag": "Is de aarde rond?"
+  }
+]'>[
+  {
+    "nr": 1,
+    "type": "meerkeuze",
+    "vraag": "Wat is de hoofdstad van Nederland?",
+    "opties": ["Amsterdam", "Rotterdam", "Den Haag", "Utrecht"],
+    "correct": 0
+  },
+  {
+    "nr": 2,
+    "type": "open",
+    "vraag": "Noem een rivier die door Nederland stroomt."
+  },
+  {
+    "nr": 3,
+    "type": "ja/nee",
+    "vraag": "Is de aarde rond?"
+  }
+]
