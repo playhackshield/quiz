@@ -364,36 +364,66 @@ updateStudentList() {
         `;
     }).join('');
     
-    // 👇 VOEG DEZE REGEL TOE:
     this.updateAnswerStats(); // Update de teller "Beantwoord: X/Y"
 }
     
 updateAnswerStats() {
-    // Tel hoeveel leerlingen hebben geantwoord op de huidige vraag
-    const answeredCount = Array.from(this.answers.keys()).filter(key => {
-        const questionNr = parseInt(key.split('_')[1]);
-        return questionNr === this.currentQuestionIndex;
-    }).length;
-    
-    console.log("Antwoord statistieken:", {
-        answered: answeredCount,
-        total: this.students.size,
-        question: this.currentQuestionIndex
-    });
-    
-    // Update het "Beantwoord: X/Y" veld
-    const answeredCountEl = document.getElementById('answered-count');
-    const totalStudentsEl = document.getElementById('total-students');
-    
-    if (answeredCountEl) {
-        answeredCountEl.textContent = answeredCount;
+    try {
+        // Bereken aantal antwoorden voor huidige vraag
+        let answeredCount = 0;
+        
+        this.answers.forEach((answer, key) => {
+            const questionNr = parseInt(key.split('_')[1]);
+            if (questionNr === this.currentQuestionIndex) {
+                answeredCount++;
+            }
+        });
+        
+        console.log(`📊 Antwoord stats: ${answeredCount}/${this.students.size} (vraag ${this.currentQuestionIndex + 1})`);
+        
+        // Update DOM - veilig met null checks
+        const answeredEl = document.getElementById('answered-count');
+        const totalEl = document.getElementById('total-students');
+        
+        if (answeredEl) {
+            answeredEl.textContent = answeredCount;
+            // Visuele feedback
+            answeredEl.style.color = answeredCount > 0 ? '#16a34a' : '#dc2626';
+            answeredEl.style.fontWeight = 'bold';
+        } else {
+            console.warn("❌ Element 'answered-count' niet gevonden");
+        }
+        
+        if (totalEl) {
+            totalEl.textContent = this.students.size;
+        } else {
+            console.warn("❌ Element 'total-students' niet gevonden");
+        }
+        
+        // Update progress bar (optioneel)
+        this.updateProgressBar(answeredCount, this.students.size);
+        
+    } catch (error) {
+        console.error("Fout in updateAnswerStats:", error);
     }
+}
+
+// Optioneel: progress bar voor visuele feedback
+updateProgressBar(answered, total) {
+    if (total === 0) return;
     
-    if (totalStudentsEl) {
-        totalStudentsEl.textContent = this.students.size;
+    const percentage = Math.round((answered / total) * 100);
+    console.log(`📈 Progress: ${percentage}% (${answered}/${total})`);
+    
+    // Je kunt hier een progress bar updaten als je die toevoegt
+    const progressBar = document.getElementById('answer-progress-bar');
+    if (progressBar) {
+        progressBar.style.width = `${percentage}%`;
+        progressBar.textContent = `${answered}/${total}`;
     }
-}    
-    async previousQuestion() {
+}
+    
+        async previousQuestion() {
         if (this.currentQuestionIndex > 0) {
             this.currentQuestionIndex--;
             await this.updateCurrentQuestion();
