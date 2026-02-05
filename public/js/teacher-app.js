@@ -195,6 +195,7 @@ async loadSession(sessionId) {
                 });
                 
                 this.updateStudentList();
+                this.updateAnswerStats(); 
             }, (error) => {
                 console.error("Fout bij luisteren naar antwoorden:", error);
             });
@@ -342,25 +343,11 @@ updateStudentList() {
         return;
     }
     
-    // Debug: log alle leerlingen
-    console.log("Leerlingen in memory:");
-    this.students.forEach((student, id) => {
-        console.log(`- ${student.name} (${id})`);
-    });
-    
-    // Debug: log alle antwoorden voor huidige vraag
-    console.log("Antwoorden voor vraag", this.currentQuestionIndex + ":");
-    this.answers.forEach((answer, key) => {
-        console.log(`- ${key}: ${answer.answer}`);
-    });
-    
     studentList.innerHTML = Array.from(this.students.values()).map(student => {
         const hasAnswered = Array.from(this.answers.keys()).some(key => {
             const [studentId, questionNr] = key.split('_');
             return studentId === student.id && parseInt(questionNr) === this.currentQuestionIndex;
         });
-        
-        console.log(`Leerling ${student.name}: heeft geantwoord = ${hasAnswered}`);
         
         return `
             <div class="student-item ${hasAnswered ? 'answered' : ''}">
@@ -376,16 +363,36 @@ updateStudentList() {
             </div>
         `;
     }).join('');
+    
+    // 👇 VOEG DEZE REGEL TOE:
+    this.updateAnswerStats(); // Update de teller "Beantwoord: X/Y"
 }
     
-    updateAnswerStats() {
-        const answeredCount = Array.from(this.answers.keys()).filter(key => {
-            return parseInt(key.split('_')[1]) === this.currentQuestionIndex;
-        }).length;
-        
-        document.getElementById('answered-count').textContent = answeredCount;
+updateAnswerStats() {
+    // Tel hoeveel leerlingen hebben geantwoord op de huidige vraag
+    const answeredCount = Array.from(this.answers.keys()).filter(key => {
+        const questionNr = parseInt(key.split('_')[1]);
+        return questionNr === this.currentQuestionIndex;
+    }).length;
+    
+    console.log("Antwoord statistieken:", {
+        answered: answeredCount,
+        total: this.students.size,
+        question: this.currentQuestionIndex
+    });
+    
+    // Update het "Beantwoord: X/Y" veld
+    const answeredCountEl = document.getElementById('answered-count');
+    const totalStudentsEl = document.getElementById('total-students');
+    
+    if (answeredCountEl) {
+        answeredCountEl.textContent = answeredCount;
     }
     
+    if (totalStudentsEl) {
+        totalStudentsEl.textContent = this.students.size;
+    }
+}    
     async previousQuestion() {
         if (this.currentQuestionIndex > 0) {
             this.currentQuestionIndex--;
