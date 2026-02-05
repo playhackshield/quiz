@@ -69,6 +69,10 @@ class TeacherApp {
             this.updateQuestionCount();
             this.markAsCustom();
         });
+
+        document.getElementById('save-questionnaire').addEventListener('click', () => {
+            this.saveAsNewQuestionnaire();
+        });        
     }
     
     showSessionCreation() {
@@ -514,6 +518,46 @@ debugAnswersForCurrentQuestion() {
     });
     
     console.log(`Totaal: ${count} antwoord(en)`);
+}
+
+async saveAsNewQuestionnaire() {
+    const textarea = document.getElementById('questions-json');
+    const value = textarea.value.trim();
+    
+    if (!value) {
+        this.showMessage('Voer eerst vragen in', 'error');
+        return;
+    }
+    
+    try {
+        // Valideer JSON
+        const questions = JSON.parse(value);
+        
+        // Vraag naam aan gebruiker
+        const name = prompt('Geef een naam voor deze vragenlijst:', 'Nieuwe vragenlijst');
+        if (!name) return;
+        
+        const filename = `${name.toLowerCase().replace(/\s+/g, '_')}.json`;
+        
+        // In een echte app zou je hier een POST doen naar je server
+        // Voor nu tonen we alleen een bericht
+        this.showMessage(`Vragenlijst "${name}" zou nu worden opgeslagen als ${filename}`, 'info');
+        
+        // Voeg toe aan dropdown
+        this.addToQuestionnaireDropdown(filename, name);
+        
+    } catch (error) {
+        this.showMessage('Ongeldige JSON: ' + error.message, 'error');
+    }
+}
+
+// Helper functie om toe te voegen aan dropdown
+addToQuestionnaireDropdown(filename, displayName) {
+    const select = document.getElementById('questionnaire-select');
+    const option = document.createElement('option');
+    option.value = filename;
+    option.textContent = displayName;
+    select.appendChild(option);
 }
     
     async viewAnswers() {
