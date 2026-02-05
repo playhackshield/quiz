@@ -330,7 +330,7 @@ updateSessionDisplay(sessionData) {
 updateStudentList() {
     const studentList = document.getElementById('student-list');
     
-    console.log("Update student list, aantal leerlingen:", this.students.size);
+    console.log("Update student list voor vraag:", this.currentQuestionIndex + 1);
     
     if (this.students.size === 0) {
         studentList.innerHTML = `
@@ -344,10 +344,14 @@ updateStudentList() {
     }
     
     studentList.innerHTML = Array.from(this.students.values()).map(student => {
+        // 👇 VERBETERDE CHECK: Alleen kijken naar antwoorden voor HUIDIGE vraag
         const hasAnswered = Array.from(this.answers.keys()).some(key => {
             const [studentId, questionNr] = key.split('_');
-            return studentId === student.id && parseInt(questionNr) === this.currentQuestionIndex;
+            return studentId === student.id && 
+                   parseInt(questionNr) === this.currentQuestionIndex; // 👈 Alleen huidige vraag!
         });
+        
+        console.log(`Leerling ${student.name}: heeft geantwoord op vraag ${this.currentQuestionIndex + 1} = ${hasAnswered}`);
         
         return `
             <div class="student-item ${hasAnswered ? 'answered' : ''}">
@@ -364,7 +368,7 @@ updateStudentList() {
         `;
     }).join('');
     
-    this.updateAnswerStats(); // Update de teller "Beantwoord: X/Y"
+    this.updateAnswerStats();
 }
     
 updateAnswerStats() {
@@ -446,13 +450,39 @@ updateProgressBar(answered, total) {
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             });
             
+            console.log(`🔀 Vraag gewisseld naar: ${this.currentQuestionIndex + 1}`);
+            
+            // 👇 VOEG DIT TOE: Forceer volledige refresh
             this.displayCurrentQuestion();
+            
+            // Log de status voor debugging
+            setTimeout(() => {
+                console.log("Na vraagwissel - antwoorden voor deze vraag:");
+                this.debugAnswersForCurrentQuestion();
+            }, 500);
             
         } catch (error) {
             console.error('Fout bij updaten vraag:', error);
             this.showMessage('Fout: ' + error.message, 'error');
         }
     }
+
+// Nieuwe helper functie
+debugAnswersForCurrentQuestion() {
+    console.log(`📋 Antwoorden voor vraag ${this.currentQuestionIndex + 1}:`);
+    
+    let count = 0;
+    this.answers.forEach((answer, key) => {
+        const [studentId, questionNr] = key.split('_');
+        if (parseInt(questionNr) === this.currentQuestionIndex) {
+            count++;
+            const student = this.students.get(studentId);
+            console.log(`  ${count}. ${student ? student.name : 'Onbekend'}: ${answer.answer}`);
+        }
+    });
+    
+    console.log(`Totaal: ${count} antwoord(en)`);
+}
     
     async viewAnswers() {
     if (!this.currentSession) return;
