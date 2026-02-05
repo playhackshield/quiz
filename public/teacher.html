@@ -26,6 +26,32 @@
 
                 <div class="form-group">
                     <label for="questions-json"><i class="fas fa-question-circle"></i> Quiz Vragen</label>
+            
+                    <div class="questionnaire-selector">
+                            <div class="selector-header">
+                                <label for="questionnaire-select"><i class="fas fa-folder-open"></i> Kies een vragenlijst:</label>
+                                <div class="selector-actions">
+                                    <button type="button" id="refresh-questionnaires" class="btn btn-small" title="Ververs lijst">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <select id="questionnaire-select" class="questionnaire-dropdown">
+                                <option value="">-- Kies een vragenlijst --</option>
+                                <option value="custom">Eigen vragen invoeren</option>
+                                <option value="geschiedenis.json">Geschiedenis Quiz</option>
+                                <option value="aardrijkskunde.json">Aardrijkskunde Quiz</option>
+                                <option value="wiskunde.json">Wiskunde Quiz</option>
+                                <option value="nederlands.json">Nederlands Quiz</option>
+                            </select>
+                            
+                            <div id="questionnaire-info" class="questionnaire-info hidden">
+                                <span id="selected-questionnaire-name"></span>
+                                <span id="question-count">0 vragen</span>
+                            </div>
+                        </div>
+                                        
                     <textarea id="questions-json" rows="12" placeholder='[
   {
     "nr": 1,
