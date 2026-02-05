@@ -5,7 +5,8 @@ class TeacherApp {
         this.currentQuestionIndex = 0;
         this.students = new Map();
         this.answers = new Map();
-        
+        this.questionnaires = [];
+        this.selectedQuestionnaire = null;
         this.init();
     }
     
@@ -25,6 +26,8 @@ class TeacherApp {
             }
             
             this.setupEventListeners();
+
+            await this.loadQuestionnaires();
             
         } catch (error) {
             console.error('Initialisatie fout:', error);
@@ -52,6 +55,20 @@ class TeacherApp {
                 this.createSession();
             }
         });
+
+        document.getElementById('questionnaire-select').addEventListener('change', (e) => {
+            this.handleQuestionnaireSelect(e.target.value);
+        });
+    
+        document.getElementById('refresh-questionnaires').addEventListener('click', () => {
+            this.loadQuestionnaires();
+        });
+        
+        // Verander JSON wanneer gebruiker typt (update count)
+        document.getElementById('questions-json').addEventListener('input', (e) => {
+            this.updateQuestionCount();
+            this.markAsCustom();
+        });
     }
     
     showSessionCreation() {
@@ -70,66 +87,81 @@ class TeacherApp {
         document.getElementById('loading-screen').classList.remove('hidden');
     }
     
-    async createSession() {
+async createSession() {
+    try {
+        this.showLoading();
+        
+        const title = document.getElementById('quiz-title').value.trim() || 'Quiz Sessie';
+        const questionsJson = document.getElementById('questions-json').value;
+        
+        let questions;
         try {
-            this.showLoading();
-            
-            const title = document.getElementById('quiz-title').value.trim() || 'Quiz Sessie';
-            const questionsJson = document.getElementById('questions-json').value;
-            
-            let questions;
-            try {
-                const parsed = JSON.parse(questionsJson);
-                questions = validateQuestions(parsed);
-            } catch (e) {
-                console.warn('Ongeldige JSON, gebruik standaard vragen');
-                questions = validateQuestions([
-                    {
-                        type: "meerkeuze",
-                        vraag: "Wat is de hoofdstad van Nederland?",
-                        opties: ["Amsterdam", "Rotterdam", "Den Haag", "Utrecht"]
-                    }
-                ]);
-            }
-            
-            const code = generateSessionCode();
-            const teacherId = auth.currentUser.uid;
-            
-            // Maak sessie in Firestore
-            const sessionRef = await sessionsCollection.add({
-                title: title,
-                code: code,
-                teacherId: teacherId,
-                currentQuestion: 0,
-                questions: questions,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                active: true,
-                studentCount: 0
-            });
-            
-            this.currentSession = {
-                id: sessionRef.id,
-                code: code,
-                title: title,
-                teacherId: teacherId
-            };
-            
-            // Sla op in localStorage
-            localStorage.setItem('teacherSession', JSON.stringify(this.currentSession));
-            
-            // Laad de sessie
-            await this.loadSession(sessionRef.id);
-            this.showActiveSession();
-            
-            // Toon succes bericht
-            this.showMessage('Sessie aangemaakt! Code: ' + code, 'success');
-            
-        } catch (error) {
-            console.error('Fout bij aanmaken sessie:', error);
-            this.showMessage('Fout: ' + error.message, 'error');
-            this.showSessionCreation();
+            const parsed = JSON.parse(questionsJson);
+            questions = validateQuestions(parsed);
+        } catch (e) {
+            console.warn('Ongeldige JSON, gebruik standaard vragen');
+            questions = validateQuestions([
+                {
+                    type: "meerkeuze",
+                    vraag: "Wat is de hoofdstad van Nederland?",
+                    opties: ["Amsterdam", "Rotterdam", "Den Haag", "Utrecht"]
+                }
+            ]);
         }
+        
+        const code = generateSessionCode();
+        const teacherId = auth.currentUser.uid;
+        
+        // 👇 OPSLAAN WELKE QUESTIONNAIRE GEBRUIKT IS
+        const sessionData = {
+            title: title,
+            code: code,
+            teacherId: teacherId,
+            currentQuestion: 0,
+            questions: questions,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            active: true,
+            studentCount: 0
+        };
+        
+        // Voeg questionnaire info toe als er een geselecteerd was
+        if (this.selectedQuestionnaire) {
+            sessionData.questionnaire = this.selectedQuestionnaire;
+            sessionData.questionnaireName = this.getQuestionnaireDisplayName(this.selectedQuestionnaire);
+        }
+        
+        // Maak sessie in Firestore
+        const sessionRef = await sessionsCollection.add(sessionData);
+        
+        this.currentSession = {
+            id: sessionRef.id,
+            code: code,
+            title: title,
+            teacherId: teacherId,
+            questionnaire: this.selectedQuestionnaire
+        };
+        
+        // Sla op in localStorage
+        localStorage.setItem('teacherSession', JSON.stringify(this.currentSession));
+        
+        // Laad de sessie
+        await this.loadSession(sessionRef.id);
+        this.showActiveSession();
+        
+        // Toon succes bericht met questionnaire info
+        let message = `Sessie aangemaakt! Code: ${code}`;
+        if (this.selectedQuestionnaire) {
+            message += `\nVragenlijst: ${this.getQuestionnaireDisplayName(this.selectedQuestionnaire)}`;
+        }
+        
+        this.showMessage(message, 'success');
+        
+    } catch (error) {
+        console.error('Fout bij aanmaken sessie:', error);
+        this.showMessage('Fout: ' + error.message, 'error');
+        this.showSessionCreation();
     }
+}
     
 async loadSession(sessionId) {
     try {
@@ -542,6 +574,149 @@ debugAnswersForCurrentQuestion() {
         console.error('Fout bij bekijken antwoorden:', error);
         this.showMessage('Fout: ' + error.message, 'error');
     }
+}
+
+async loadQuestionnaires() {
+    try {
+        console.log("Questionnaires laden...");
+        
+        // In een echte app zou je dit van een server halen
+        // Voor nu gebruiken we hardcoded opties + dynamisch laden
+        
+        const questionnaireSelect = document.getElementById('questionnaire-select');
+        
+        // Haal bestaande opties op (behalve eerste twee)
+        const existingOptions = Array.from(questionnaireSelect.options).slice(2);
+        
+        // Voor demo: we hebben hardcoded opties in de HTML
+        // In een echte app zou je hier een fetch doen naar je server
+        
+        this.showMessage('Vragenlijsten geladen', 'success');
+        
+        // Update count voor geselecteerde questionnaire
+        this.updateQuestionCount();
+        
+    } catch (error) {
+        console.error('Fout bij laden questionnaires:', error);
+    }
+}
+
+// NIEUWE FUNCTIE: Handle questionnaire selectie
+async handleQuestionnaireSelect(questionnaireName) {
+    const textarea = document.getElementById('questions-json');
+    const infoDiv = document.getElementById('questionnaire-info');
+    const selector = document.querySelector('.questionnaire-selector');
+    
+    if (!questionnaireName || questionnaireName === 'custom') {
+        // Eigen vragen modus
+        infoDiv.classList.add('hidden');
+        selector.classList.remove('questionnaire-loaded');
+        this.selectedQuestionnaire = null;
+        return;
+    }
+    
+    try {
+        console.log(`Questionnaire laden: ${questionnaireName}`);
+        
+        // Toon loading state
+        textarea.value = 'Vragenlijst laden...';
+        textarea.disabled = true;
+        
+        // Haal JSON op van server
+        const response = await fetch(`questionnaires/${questionnaireName}`);
+        
+        if (!response.ok) {
+            throw new Error(`Kan vragenlijst niet laden: ${response.status}`);
+        }
+        
+        const questions = await response.json();
+        
+        // Formatteer JSON mooi
+        const formattedJson = JSON.stringify(questions, null, 2);
+        textarea.value = formattedJson;
+        textarea.disabled = false;
+        
+        // Update UI
+        infoDiv.classList.remove('hidden');
+        document.getElementById('selected-questionnaire-name').textContent = 
+            this.getQuestionnaireDisplayName(questionnaireName);
+        
+        selector.classList.add('questionnaire-loaded');
+        this.selectedQuestionnaire = questionnaireName;
+        
+        // Update vraag count
+        this.updateQuestionCount();
+        
+        // Focus op textarea voor bewerking
+        setTimeout(() => {
+            textarea.focus();
+            // Plaats cursor aan het einde
+            textarea.selectionStart = textarea.selectionEnd = textarea.value.length;
+        }, 100);
+        
+        this.showMessage(`Vragenlijst "${this.getQuestionnaireDisplayName(questionnaireName)}" geladen`, 'success');
+        
+    } catch (error) {
+        console.error('Fout bij laden questionnaire:', error);
+        
+        // Reset naar custom modus
+        textarea.value = '';
+        textarea.disabled = false;
+        questionnaireSelect.value = 'custom';
+        infoDiv.classList.add('hidden');
+        selector.classList.remove('questionnaire-loaded');
+        
+        this.showMessage(`Fout bij laden: ${error.message}`, 'error');
+    }
+}
+
+// NIEUWE FUNCTIE: Update vraag count
+updateQuestionCount() {
+    try {
+        const textarea = document.getElementById('questions-json');
+        const value = textarea.value.trim();
+        
+        if (!value) {
+            document.getElementById('question-count').textContent = '0 vragen';
+            return;
+        }
+        
+        const questions = JSON.parse(value);
+        const count = Array.isArray(questions) ? questions.length : 0;
+        
+        document.getElementById('question-count').textContent = `${count} vraag${count !== 1 ? 'en' : ''}`;
+        
+    } catch (error) {
+        // Ongeldige JSON, toon fout
+        document.getElementById('question-count').textContent = 'Ongeldige JSON';
+        document.getElementById('question-count').style.color = '#ef4444';
+    }
+}
+
+// NIEUWE FUNCTIE: Markeer als custom wanneer gebruiker typt
+markAsCustom() {
+    const select = document.getElementById('questionnaire-select');
+    const infoDiv = document.getElementById('questionnaire-info');
+    const selector = document.querySelector('.questionnaire-selector');
+    
+    if (select.value && select.value !== 'custom') {
+        select.value = 'custom';
+        infoDiv.classList.add('hidden');
+        selector.classList.remove('questionnaire-loaded');
+        this.selectedQuestionnaire = null;
+    }
+}
+
+// NIEUWE FUNCTIE: Get display name voor questionnaire
+getQuestionnaireDisplayName(filename) {
+    const names = {
+        'geschiedenis.json': 'Geschiedenis Quiz',
+        'aardrijkskunde.json': 'Aardrijkskunde Quiz', 
+        'wiskunde.json': 'Wiskunde Quiz',
+        'nederlands.json': 'Nederlands Quiz'
+    };
+    
+    return names[filename] || filename.replace('.json', '').replace(/_/g, ' ');
 }
     
     async exportAnswers() {
