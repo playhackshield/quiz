@@ -1,12 +1,12 @@
 // === FIREBASE CONFIGURATIE ===
 // VERVANG DEZE WAARDEN MET JE EIGEN FIREBASE CONFIG
 const firebaseConfig = {
-    apiKey: "AIzaSyD...vul_je_eigen_apiKey_in",
-    authDomain: "jouw-project.firebaseapp.com",
-    projectId: "jouw-project-id",
-    storageBucket: "jouw-project-id.appspot.com",
-    messagingSenderId: "123456789012",
-    appId: "1:123456789012:web:abcdef1234567890"
+  apiKey: "AIzaSyCOLOtMA64eSOw0y515uma6fxEe6ps90qA",
+  authDomain: "quizapp-school.firebaseapp.com",
+  projectId: "quizapp-school",
+  storageBucket: "quizapp-school.firebasestorage.app",
+  messagingSenderId: "236956973",
+  appId: "1:236956973:web:7455676e7b091f671ef7a4"
 };
 
 // === FIREBASE INITIALISATIE ===
