@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Firebase Test</title>
+</head>
+<body>
+    <h1>Firebase Config Test</h1>
+    <div id="status">Testen...</div>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    
+    <!-- Jouw config -->
+    <script src="js/firebase-config.js"></script>
+    
+    <script>
+        // Test functie
+        async function testFirebase() {
+            const status = document.getElementById('status');
+            
+            try {
+                // Test 1: Firebase beschikbaar?
+                if (typeof firebase === 'undefined') {
+                    status.innerHTML = '❌ Firebase SDK niet geladen';
+                    return;
+                }
+                status.innerHTML = '✅ Firebase SDK geladen<br>';
+                
+                // Test 2: App geïnitialiseerd?
+                if (!firebase.apps.length) {
+                    status.innerHTML += '❌ Firebase app niet geïnitialiseerd<br>';
+                    return;
+                }
+                status.innerHTML += '✅ Firebase app geïnitialiseerd<br>';
+                
+                // Test 3: Auth werkt?
+                if (!auth) {
+                    status.innerHTML += '❌ Firebase Auth niet beschikbaar<br>';
+                    return;
+                }
+                status.innerHTML += '✅ Firebase Auth beschikbaar<br>';
+                
+                // Test 4: Inloggen
+                const user = await anonymousLogin();
+                status.innerHTML += `✅ Ingelogd als: ${user.uid}<br>`;
+                
+                // Test 5: Firestore
+                if (!db) {
+                    status.innerHTML += '❌ Firestore niet beschikbaar<br>';
+                    return;
+                }
+                status.innerHTML += '✅ Firestore beschikbaar<br>';
+                
+                // Test 6: Schrijf test data
+                await db.collection('test').add({
+                    test: 'Firebase werkt!',
+                    timestamp: new Date().toISOString()
+                });
+                status.innerHTML += '✅ Test data geschreven naar Firestore<br>';
+                status.innerHTML += '<br><strong style="color: green;">🎉 ALLES WERKT!</strong>';
+                
+            } catch (error) {
+                status.innerHTML += `<br>❌ Fout: ${error.message}<br>`;
+                status.innerHTML += `<small>Code: ${error.code || 'geen code'}</small>`;
+            }
+        }
+        
+        // Start test
+        document.addEventListener('DOMContentLoaded', testFirebase);
+    </script>
+</body>
+</html>
