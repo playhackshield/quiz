@@ -754,10 +754,9 @@ markAsCustom() {
 // NIEUWE FUNCTIE: Get display name voor questionnaire
 getQuestionnaireDisplayName(filename) {
     const names = {
+        'introductie.json': 'Introductie Quiz',
         'geschiedenis.json': 'Geschiedenis Quiz',
-        'aardrijkskunde.json': 'Aardrijkskunde Quiz', 
-        'wiskunde.json': 'Wiskunde Quiz',
-        'nederlands.json': 'Nederlands Quiz'
+        'aarderijkskunde.json': 'Aarderijkskunde Quiz' 
     };
     
     return names[filename] || filename.replace('.json', '').replace(/_/g, ' ');
