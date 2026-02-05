@@ -903,3 +903,78 @@ textarea {
 .stat i {
     font-size: 1.2em;
 }
+
+/* === QUESTIONNAIRE SELECTOR === */
+.questionnaire-selector {
+    margin-bottom: 1.5rem;
+    border: 2px solid #e2e8f0;
+    border-radius: var(--border-radius-sm);
+    padding: 1rem;
+    background: #f8fafc;
+}
+
+.selector-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.selector-header label {
+    margin: 0;
+    font-weight: 600;
+    color: var(--dark-color);
+}
+
+.questionnaire-dropdown {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: var(--border-radius-sm);
+    font-size: 1rem;
+    background: white;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.questionnaire-dropdown:hover {
+    border-color: var(--primary-color);
+}
+
+.questionnaire-dropdown:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+}
+
+.questionnaire-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    background: white;
+    border-radius: var(--border-radius-sm);
+    border: 1px solid #e2e8f0;
+    font-size: 0.9rem;
+}
+
+#selected-questionnaire-name {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+#question-count {
+    color: var(--gray-color);
+    font-size: 0.85rem;
+}
+
+/* Highlight for loaded questionnaire */
+.questionnaire-loaded {
+    border-color: #10b981;
+    background: #f0fdf4;
+}
+
+.questionnaire-loaded .questionnaire-dropdown {
+    border-color: #10b981;
+}
