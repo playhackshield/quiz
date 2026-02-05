@@ -126,70 +126,84 @@ class StudentApp {
         }
     }
     
-    async joinSession() {
-        try {
-            const code = document.getElementById('session-code-input').value.trim();
-            const name = document.getElementById('student-name-input').value.trim();
-            
-            // Validatie
-            if (!code || code.length !== 4) {
-                this.showError('Voer een geldige 4-cijferige code in');
-                return;
-            }
-            
-            if (!name) {
-                this.showError('Voer je naam in');
-                return;
-            }
-            
-            this.showLoadingScreen();
-            
-            // Zoek sessie op code
-            const sessionsSnapshot = await sessionsCollection
-                .where('code', '==', code)
-                .where('active', '==', true)
-                .limit(1)
-                .get();
-            
-            if (sessionsSnapshot.empty) {
-                throw new Error('Geen actieve sessie gevonden met deze code');
-            }
-            
-            const sessionDoc = sessionsSnapshot.docs[0];
-            const sessionData = sessionDoc.data();
-            
-            // Voeg leerling toe aan sessie
-            const studentRef = await studentsCollection.add({
-                sessionId: sessionDoc.id,
-                name: name,
-                joinedAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            
-            this.currentSession = {
-                id: sessionDoc.id,
-                ...sessionData
-            };
-            
-            this.studentInfo = {
-                id: studentRef.id,
-                sessionId: sessionDoc.id,
-                name: name
-            };
-            
-            // Sla op in localStorage
-            localStorage.setItem('studentSession', JSON.stringify(this.studentInfo));
-            
-            // Luister naar sessie updates
-            this.setupSessionListener();
-            
-            this.showWaitingScreen();
-            
-        } catch (error) {
-            console.error('Fout bij deelnemen:', error);
-            this.showJoinScreen();
-            this.showError(error.message);
+async joinSession() {
+    try {
+        const code = document.getElementById('session-code-input').value.trim();
+        const name = document.getElementById('student-name-input').value.trim();
+        
+        // Validatie
+        if (!code || code.length !== 4) {
+            this.showError('Voer een geldige 4-cijferige code in');
+            return;
         }
+        
+        if (!name) {
+            this.showError('Voer je naam in');
+            return;
+        }
+        
+        this.showLoadingScreen();
+        
+        console.log("Zoek sessie met code:", code);
+        
+        // Zoek sessie op code
+        const sessionsSnapshot = await sessionsCollection
+            .where('code', '==', code)
+            .where('active', '==', true)
+            .limit(1)
+            .get();
+        
+        if (sessionsSnapshot.empty) {
+            throw new Error('Geen actieve sessie gevonden met deze code');
+        }
+        
+        const sessionDoc = sessionsSnapshot.docs[0];
+        const sessionData = sessionDoc.data();
+        
+        console.log("Sessie gevonden:", {
+            id: sessionDoc.id,
+            code: sessionData.code,
+            title: sessionData.title
+        });
+        
+        // Voeg leerling toe aan sessie
+        console.log("Leerling toevoegen:", name, "aan sessie:", sessionDoc.id);
+        
+        const studentRef = await studentsCollection.add({
+            sessionId: sessionDoc.id,
+            name: name,
+            joinedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        console.log("Leerling toegevoegd met ID:", studentRef.id);
+        
+        this.currentSession = {
+            id: sessionDoc.id,
+            ...sessionData
+        };
+        
+        this.studentInfo = {
+            id: studentRef.id,
+            sessionId: sessionDoc.id,
+            name: name
+        };
+        
+        // Sla op in localStorage
+        localStorage.setItem('studentSession', JSON.stringify(this.studentInfo));
+        
+        console.log("Student info opgeslagen:", this.studentInfo);
+        
+        // Luister naar sessie updates
+        this.setupSessionListener();
+        
+        this.showWaitingScreen();
+        
+    } catch (error) {
+        console.error('Fout bij deelnemen:', error);
+        this.showJoinScreen();
+        this.showError(error.message);
     }
+}    
     
     setupSessionListener() {
         if (!this.currentSession) return;
