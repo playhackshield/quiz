@@ -235,111 +235,162 @@ class StudentApp {
     }
     
     displayQuestion(question) {
-        // Update vraag tekst
-        document.getElementById('question-text').textContent = question.vraag;
-        document.getElementById('question-number').textContent = question.nr;
-        
-        // Reset alle vraag types
-        document.getElementById('multiple-choice-options').classList.add('hidden');
-        document.getElementById('open-answer-container').classList.add('hidden');
-        document.getElementById('yesno-options').classList.add('hidden');
-        document.getElementById('answer-status').classList.add('hidden');
-        document.getElementById('submit-answer-btn').classList.remove('hidden');
-        document.getElementById('change-answer-btn').classList.add('hidden');
-        
-        // Reset geselecteerde antwoorden
-        document.querySelectorAll('.option.selected').forEach(el => {
-            el.classList.remove('selected');
-        });
-        document.querySelectorAll('.yesno-option.selected').forEach(el => {
-            el.classList.remove('selected');
-        });
-        document.getElementById('open-answer-input').value = '';
-        
-        // Toon juiste vraag type
-        switch(question.type) {
-            case 'meerkeuze':
-                this.displayMultipleChoice(question);
-                break;
-            case 'open':
-                this.displayOpenAnswer();
-                break;
-            case 'ja/nee':
-                this.displayYesNo();
-                break;
-        }
-        
-        // Controleer of er al een antwoord is
-        this.checkExistingAnswer();
+    console.log("Nieuwe vraag laden:", question.nr, question.type);
+    
+    // RESET ALLE STATES
+    this.hasSubmitted = false;
+    this.selectedAnswer = null;
+    
+    // Update vraag tekst
+    document.getElementById('question-text').textContent = question.vraag;
+    document.getElementById('question-number').textContent = question.nr;
+    
+    // VERBERG ALLE VRAAG TYPES
+    document.getElementById('multiple-choice-options').classList.add('hidden');
+    document.getElementById('open-answer-container').classList.add('hidden');
+    document.getElementById('yesno-options').classList.add('hidden');
+    
+    // RESET ANSWER STATUS
+    document.getElementById('answer-status').classList.add('hidden');
+    document.getElementById('submit-answer-btn').classList.remove('hidden');
+    document.getElementById('change-answer-btn').classList.add('hidden');
+    
+    // RESET ALLE INPUTS
+    this.resetAllInputs();
+    
+    // TOON JUISTE VRAAG TYPE
+    switch(question.type) {
+        case 'meerkeuze':
+            this.displayMultipleChoice(question);
+            break;
+        case 'open':
+            this.displayOpenAnswer();
+            break;
+        case 'ja/nee':
+            this.displayYesNo();
+            break;
     }
+    
+    // Controleer of er al een antwoord is
+    this.checkExistingAnswer();
+}
+
+// NIEUWE FUNCTIE: Reset alle inputs
+resetAllInputs() {
+    // Reset multiple choice
+    document.querySelectorAll('.option').forEach(el => {
+        el.classList.remove('selected');
+        el.style.pointerEvents = 'auto';
+        el.style.opacity = '1';
+    });
+    
+    // Reset yes/no
+    document.querySelectorAll('.yesno-option').forEach(el => {
+        el.classList.remove('selected');
+        el.style.pointerEvents = 'auto';
+        el.style.opacity = '1';
+    });
+    
+    // Reset open answer
+    const openAnswerInput = document.getElementById('open-answer-input');
+    if (openAnswerInput) {
+        openAnswerInput.value = '';
+        openAnswerInput.readOnly = false;
+        openAnswerInput.disabled = false;
+        openAnswerInput.placeholder = 'Typ je antwoord hier...';
+    }
+    
+    // Reset submit button
+    const submitBtn = document.getElementById('submit-answer-btn');
+    if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Verstuur Antwoord';
+    }
+}
     
     displayMultipleChoice(question) {
-        const container = document.getElementById('multiple-choice-options');
-        container.innerHTML = '';
-        container.classList.remove('hidden');
+    const container = document.getElementById('multiple-choice-options');
+    container.innerHTML = ''; // LEEGMAKEN
+    container.classList.remove('hidden');
+    
+    question.opties.forEach((optie, index) => {
+        const optionDiv = document.createElement('div');
+        optionDiv.className = 'option';
+        optionDiv.innerHTML = `
+            <div class="option-letter">${String.fromCharCode(65 + index)}</div>
+            <div class="option-text">${optie}</div>
+        `;
         
-        question.opties.forEach((optie, index) => {
-            const optionDiv = document.createElement('div');
-            optionDiv.className = 'option';
-            optionDiv.innerHTML = `
-                <div class="option-letter">${String.fromCharCode(65 + index)}</div>
-                <div class="option-text">${optie}</div>
-            `;
+        optionDiv.addEventListener('click', () => {
+            if (this.hasSubmitted) return;
             
-            optionDiv.addEventListener('click', () => {
-                if (this.hasSubmitted) return;
-                
-                // Deselecteer andere opties
-                document.querySelectorAll('#multiple-choice-options .option').forEach(el => {
-                    el.classList.remove('selected');
-                });
-                
-                // Selecteer deze optie
-                optionDiv.classList.add('selected');
-                this.selectedAnswer = index;
+            // Deselecteer andere opties
+            document.querySelectorAll('#multiple-choice-options .option').forEach(el => {
+                el.classList.remove('selected');
             });
             
-            container.appendChild(optionDiv);
-        });
-    }
-    
-    displayOpenAnswer() {
-        const container = document.getElementById('open-answer-container');
-        const input = document.getElementById('open-answer-input');
-        
-        container.classList.remove('hidden');
-        input.value = '';
-        input.focus();
-        
-        input.addEventListener('input', (e) => {
-            if (!this.hasSubmitted) {
-                this.selectedAnswer = e.target.value.trim();
-            }
-        });
-    }
-    
-    displayYesNo() {
-        const container = document.getElementById('yesno-options');
-        container.classList.remove('hidden');
-        
-        document.querySelectorAll('.yesno-option').forEach(option => {
-            option.classList.remove('selected');
+            // Selecteer deze optie
+            optionDiv.classList.add('selected');
+            this.selectedAnswer = index;
             
-            option.addEventListener('click', () => {
-                if (this.hasSubmitted) return;
-                
-                // Deselecteer andere opties
-                document.querySelectorAll('.yesno-option').forEach(el => {
-                    el.classList.remove('selected');
-                });
-                
-                // Selecteer deze optie
-                option.classList.add('selected');
-                this.selectedAnswer = option.dataset.answer;
-            });
+            console.log("Meerkeuze geselecteerd:", index, optie);
         });
-    }
+        
+        container.appendChild(optionDiv);
+    });
+}
     
+displayOpenAnswer() {
+    const container = document.getElementById('open-answer-container');
+    const input = document.getElementById('open-answer-input');
+    
+    container.classList.remove('hidden');
+    input.value = '';
+    input.readOnly = false;
+    input.disabled = false;
+    input.placeholder = 'Typ je antwoord hier...';
+    input.focus();
+    
+    // Reset event listener
+    input.oninput = null;
+    input.oninput = (e) => {
+        if (!this.hasSubmitted) {
+            this.selectedAnswer = e.target.value.trim();
+            console.log("Open antwoord:", this.selectedAnswer);
+        }
+    };
+}    
+
+displayYesNo() {
+    const container = document.getElementById('yesno-options');
+    container.classList.remove('hidden');
+    
+    // Reset alle options
+    document.querySelectorAll('.yesno-option').forEach(option => {
+        option.classList.remove('selected');
+        option.style.pointerEvents = 'auto';
+        option.style.opacity = '1';
+        
+        // Remove old event listeners
+        option.onclick = null;
+        
+        // Add new event listener
+        option.onclick = () => {
+            if (this.hasSubmitted) return;
+            
+            console.log("Yes/No clicked:", option.dataset.answer);
+            
+            // Deselecteer andere opties
+            document.querySelectorAll('.yesno-option').forEach(el => {
+                el.classList.remove('selected');
+            });
+            
+            // Selecteer deze optie
+            option.classList.add('selected');
+            this.selectedAnswer = option.dataset.answer;
+        };
+    });
+}    
     async checkExistingAnswer() {
         if (!this.studentInfo || !this.currentQuestion) return;
         
@@ -413,47 +464,58 @@ class StudentApp {
         }
     }
     
-    showAnswerSubmitted() {
-        document.getElementById('answer-status').classList.remove('hidden');
-        document.getElementById('submit-answer-btn').classList.add('hidden');
-        document.getElementById('change-answer-btn').classList.remove('hidden');
-        
-        // Maak inputs read-only
-        document.querySelectorAll('#multiple-choice-options .option').forEach(el => {
-            el.style.pointerEvents = 'none';
-        });
-        
-        document.querySelectorAll('.yesno-option').forEach(el => {
-            el.style.pointerEvents = 'none';
-        });
-        
-        const openAnswerInput = document.getElementById('open-answer-input');
-        if (openAnswerInput) {
-            openAnswerInput.readOnly = true;
-        }
-    }
+showAnswerSubmitted() {
+    console.log("Antwoord ingediend, tonen status");
     
-    changeAnswer() {
-        this.hasSubmitted = false;
-        document.getElementById('answer-status').classList.add('hidden');
-        document.getElementById('submit-answer-btn').classList.remove('hidden');
-        document.getElementById('change-answer-btn').classList.add('hidden');
-        
-        // Maak inputs weer editable
-        document.querySelectorAll('#multiple-choice-options .option').forEach(el => {
-            el.style.pointerEvents = 'auto';
-        });
-        
-        document.querySelectorAll('.yesno-option').forEach(el => {
-            el.style.pointerEvents = 'auto';
-        });
-        
-        const openAnswerInput = document.getElementById('open-answer-input');
-        if (openAnswerInput) {
-            openAnswerInput.readOnly = false;
-            openAnswerInput.focus();
-        }
+    // Toon success status
+    document.getElementById('answer-status').classList.remove('hidden');
+    document.getElementById('submit-answer-btn').classList.add('hidden');
+    document.getElementById('change-answer-btn').classList.remove('hidden');
+    
+    // Maak inputs read-only MAAR niet disabled
+    document.querySelectorAll('#multiple-choice-options .option').forEach(el => {
+        el.style.pointerEvents = 'none';
+        el.style.opacity = '0.7';
+    });
+    
+    document.querySelectorAll('.yesno-option').forEach(el => {
+        el.style.pointerEvents = 'none';
+        el.style.opacity = '0.7';
+    });
+    
+    const openAnswerInput = document.getElementById('open-answer-input');
+    if (openAnswerInput) {
+        openAnswerInput.readOnly = true;
+        openAnswerInput.style.opacity = '0.7';
     }
+}    
+    
+changeAnswer() {
+    console.log("Antwoord wijzigen");
+    
+    this.hasSubmitted = false;
+    document.getElementById('answer-status').classList.add('hidden');
+    document.getElementById('submit-answer-btn').classList.remove('hidden');
+    document.getElementById('change-answer-btn').classList.add('hidden');
+    
+    // Maak inputs weer editable
+    document.querySelectorAll('#multiple-choice-options .option').forEach(el => {
+        el.style.pointerEvents = 'auto';
+        el.style.opacity = '1';
+    });
+    
+    document.querySelectorAll('.yesno-option').forEach(el => {
+        el.style.pointerEvents = 'auto';
+        el.style.opacity = '1';
+    });
+    
+    const openAnswerInput = document.getElementById('open-answer-input');
+    if (openAnswerInput) {
+        openAnswerInput.readOnly = false;
+        openAnswerInput.style.opacity = '1';
+        openAnswerInput.focus();
+    }
+}
     
     async leaveSession() {
         if (confirm('Weet je zeker dat je de sessie wilt verlaten?')) {
