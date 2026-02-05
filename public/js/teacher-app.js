@@ -131,67 +131,92 @@ class TeacherApp {
         }
     }
     
-    async loadSession(sessionId) {
-        try {
-            // Luister naar sessie updates
-            sessionsCollection.doc(sessionId).onSnapshot((doc) => {
-                if (!doc.exists) {
-                    this.showMessage('Sessie niet gevonden', 'error');
-                    localStorage.removeItem('teacherSession');
-                    this.showSessionCreation();
-                    return;
-                }
+async loadSession(sessionId) {
+    try {
+        console.log("Session laden:", sessionId);
+        
+        // Luister naar sessie updates
+        sessionsCollection.doc(sessionId).onSnapshot((doc) => {
+            if (!doc.exists) {
+                this.showMessage('Sessie niet gevonden', 'error');
+                localStorage.removeItem('teacherSession');
+                this.showSessionCreation();
+                return;
+            }
+            
+            const data = doc.data();
+            this.currentQuestionIndex = data.currentQuestion || 0;
+            this.questions = data.questions || [];
+            
+            // Update UI
+            this.updateSessionDisplay(data);
+            this.displayCurrentQuestion();
+        }, (error) => {
+            console.error("Fout bij luisteren naar sessie:", error);
+        });
+        
+        // 👇 VERBETERDE VERSIE: Luister naar leerlingen
+        studentsCollection
+            .where('sessionId', '==', sessionId)
+            .orderBy('joinedAt', 'asc')
+            .onSnapshot((snapshot) => {
+                console.log("Leerlingen snapshot ontvangen:", snapshot.size, "leerlingen");
                 
-                const data = doc.data();
-                this.currentQuestionIndex = data.currentQuestion || 0;
-                this.questions = data.questions || [];
+                this.students.clear();
+                snapshot.forEach(doc => {
+                    const studentData = doc.data();
+                    const student = {
+                        id: doc.id,
+                        name: studentData.name,
+                        joinedAt: studentData.joinedAt,
+                        sessionId: studentData.sessionId
+                    };
+                    this.students.set(doc.id, student);
+                    console.log("Leerling toegevoegd:", student.name, "(ID:", doc.id + ")");
+                });
                 
-                // Update UI
-                this.updateSessionDisplay(data);
-                this.displayCurrentQuestion();
+                this.updateStudentList();
+                this.updateSessionDisplay({}); // Update student count
+            }, (error) => {
+                console.error("Fout bij luisteren naar leerlingen:", error);
+            });
+        
+        // Luister naar antwoorden
+        answersCollection
+            .where('sessionId', '==', sessionId)
+            .onSnapshot((snapshot) => {
+                console.log("Antwoorden snapshot ontvangen:", snapshot.size, "antwoorden");
+                
+                this.answers.clear();
+                snapshot.forEach(doc => {
+                    const answer = doc.data();
+                    const key = `${answer.studentId}_${answer.questionNr}`;
+                    this.answers.set(key, answer);
+                });
+                
+                this.updateStudentList();
+            }, (error) => {
+                console.error("Fout bij luisteren naar antwoorden:", error);
             });
             
-            // Luister naar leerlingen
-            studentsCollection
-                .where('sessionId', '==', sessionId)
-                .orderBy('joinedAt', 'asc')
-                .onSnapshot((snapshot) => {
-                    this.students.clear();
-                    snapshot.forEach(doc => {
-                        this.students.set(doc.id, {
-                            id: doc.id,
-                            ...doc.data()
-                        });
-                    });
-                    this.updateStudentList();
-                });
-            
-            // Luister naar antwoorden
-            answersCollection
-                .where('sessionId', '==', sessionId)
-                .onSnapshot((snapshot) => {
-                    this.answers.clear();
-                    snapshot.forEach(doc => {
-                        const answer = doc.data();
-                        const key = `${answer.studentId}_${answer.questionNr}`;
-                        this.answers.set(key, answer);
-                    });
-                    this.updateStudentList();
-                });
-                
-        } catch (error) {
-            console.error('Fout bij laden sessie:', error);
-            this.showMessage('Fout bij laden: ' + error.message, 'error');
-        }
+    } catch (error) {
+        console.error('Fout bij laden sessie:', error);
+        this.showMessage('Fout bij laden: ' + error.message, 'error');
     }
+}   
     
-    updateSessionDisplay(sessionData) {
-        document.getElementById('session-code').textContent = sessionData.code;
-        document.getElementById('display-code').textContent = sessionData.code;
-        document.getElementById('student-count').textContent = this.students.size;
-        document.getElementById('total-students').textContent = this.students.size;
-        document.getElementById('total-questions').textContent = this.questions.length;
-    }
+updateSessionDisplay(sessionData) {
+    console.log("Update session display:", {
+        code: sessionData.code,
+        studentCount: this.students.size
+    });
+    
+    document.getElementById('session-code').textContent = sessionData.code || this.currentSession?.code || '----';
+    document.getElementById('display-code').textContent = sessionData.code || this.currentSession?.code || '----';
+    document.getElementById('student-count').textContent = this.students.size;
+    document.getElementById('total-students').textContent = this.students.size;
+    document.getElementById('total-questions').textContent = this.questions.length;
+}
     
     displayCurrentQuestion() {
         if (!this.questions || this.questions.length === 0) {
@@ -275,41 +300,57 @@ class TeacherApp {
         `;
     }
     
-    updateStudentList() {
-        const studentList = document.getElementById('student-list');
-        
-        if (this.students.size === 0) {
-            studentList.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-user-clock"></i>
-                    <p>Nog geen leerlingen aangemeld</p>
-                    <small>Leerlingen kunnen deelnemen via de code: <strong>${this.currentSession?.code || '----'}</strong></small>
-                </div>
-            `;
-            return;
-        }
-        
-        studentList.innerHTML = Array.from(this.students.values()).map(student => {
-            const hasAnswered = Array.from(this.answers.keys()).some(key => 
-                key.startsWith(student.id + '_') && 
-                parseInt(key.split('_')[1]) === this.currentQuestionIndex
-            );
-            
-            return `
-                <div class="student-item ${hasAnswered ? 'answered' : ''}">
-                    <div class="student-name">
-                        <i class="fas fa-user"></i>
-                        ${student.name}
-                    </div>
-                    <div class="student-status ${hasAnswered ? 'answered' : ''}">
-                        ${hasAnswered ? 
-                            '<i class="fas fa-check-circle"></i> Beantwoord' : 
-                            '<i class="far fa-clock"></i> Wachtend'}
-                    </div>
-                </div>
-            `;
-        }).join('');
+updateStudentList() {
+    const studentList = document.getElementById('student-list');
+    
+    console.log("Update student list, aantal leerlingen:", this.students.size);
+    
+    if (this.students.size === 0) {
+        studentList.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-user-clock"></i>
+                <p>Nog geen leerlingen aangemeld</p>
+                <small>Leerlingen kunnen deelnemen via de code: <strong>${this.currentSession?.code || '----'}</strong></small>
+            </div>
+        `;
+        return;
     }
+    
+    // Debug: log alle leerlingen
+    console.log("Leerlingen in memory:");
+    this.students.forEach((student, id) => {
+        console.log(`- ${student.name} (${id})`);
+    });
+    
+    // Debug: log alle antwoorden voor huidige vraag
+    console.log("Antwoorden voor vraag", this.currentQuestionIndex + ":");
+    this.answers.forEach((answer, key) => {
+        console.log(`- ${key}: ${answer.answer}`);
+    });
+    
+    studentList.innerHTML = Array.from(this.students.values()).map(student => {
+        const hasAnswered = Array.from(this.answers.keys()).some(key => {
+            const [studentId, questionNr] = key.split('_');
+            return studentId === student.id && parseInt(questionNr) === this.currentQuestionIndex;
+        });
+        
+        console.log(`Leerling ${student.name}: heeft geantwoord = ${hasAnswered}`);
+        
+        return `
+            <div class="student-item ${hasAnswered ? 'answered' : ''}">
+                <div class="student-name">
+                    <i class="fas fa-user"></i>
+                    ${student.name}
+                </div>
+                <div class="student-status ${hasAnswered ? 'answered' : ''}">
+                    ${hasAnswered ? 
+                        '<i class="fas fa-check-circle"></i> Beantwoord' : 
+                        '<i class="far fa-clock"></i> Wachtend'}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
     
     updateAnswerStats() {
         const answeredCount = Array.from(this.answers.keys()).filter(key => {
@@ -351,49 +392,64 @@ class TeacherApp {
     }
     
     async viewAnswers() {
-        if (!this.currentSession) return;
+    if (!this.currentSession) return;
+    
+    try {
+        console.log("Bekijk antwoorden voor vraag:", this.currentQuestionIndex);
+        console.log("Session ID:", this.currentSession.id);
+        console.log("Aantal leerlingen in memory:", this.students.size);
         
-        try {
-            const answersSnapshot = await answersCollection
-                .where('sessionId', '==', this.currentSession.id)
-                .where('questionNr', '==', this.currentQuestionIndex)
-                .get();
+        // Haal ALLE leerlingen op voor deze sessie
+        const studentsSnapshot = await studentsCollection
+            .where('sessionId', '==', this.currentSession.id)
+            .get();
+        
+        // Maak een map van studentId -> studentName
+        const studentMap = new Map();
+        studentsSnapshot.forEach(doc => {
+            const studentData = doc.data();
+            studentMap.set(doc.id, studentData.name);
+            console.log("Leerling gevonden:", doc.id, "->", studentData.name);
+        });
+        
+        // Haal antwoorden op
+        const answersSnapshot = await answersCollection
+            .where('sessionId', '==', this.currentSession.id)
+            .where('questionNr', '==', this.currentQuestionIndex)
+            .get();
+        
+        if (answersSnapshot.empty) {
+            this.showMessage('Nog geen antwoorden voor deze vraag.', 'info');
+            return;
+        }
+        
+        console.log("Aantal antwoorden gevonden:", answersSnapshot.size);
+        
+        let message = `Antwoorden voor vraag ${this.currentQuestionIndex + 1}:\n\n`;
+        let count = 0;
+        
+        answersSnapshot.forEach(doc => {
+            const answer = doc.data();
+            const studentName = studentMap.get(answer.studentId) || 'Onbekende leerling';
             
-            if (answersSnapshot.empty) {
-                this.showMessage('Nog geen antwoorden voor deze vraag.', 'info');
-                return;
-            }
-            
-            let message = `Antwoorden voor vraag ${this.currentQuestionIndex + 1}:\n\n`;
-            const answersByStudent = new Map();
-            
-            answersSnapshot.forEach(doc => {
-                const answer = doc.data();
-                if (!answersByStudent.has(answer.studentId)) {
-                    answersByStudent.set(answer.studentId, []);
-                }
-                answersByStudent.get(answer.studentId).push(answer);
+            console.log("Antwoord:", {
+                studentId: answer.studentId,
+                studentName: studentName,
+                answer: answer.answer
             });
             
-            // Toon antwoorden per leerling
-            for (const [studentId, answers] of answersByStudent.entries()) {
-                const student = this.students.get(studentId);
-                const studentName = student ? student.name : 'Onbekende leerling';
-                
-                message += `${studentName}:\n`;
-                answers.forEach(answer => {
-                    message += `  • ${answer.answer}\n`;
-                });
-                message += '\n';
-            }
-            
-            alert(message);
-            
-        } catch (error) {
-            console.error('Fout bij bekijken antwoorden:', error);
-            this.showMessage('Fout: ' + error.message, 'error');
-        }
+            message += `${studentName}: ${answer.answer}\n`;
+            count++;
+        });
+        
+        message += `\nTotaal: ${count} antwoord(en)`;
+        alert(message);
+        
+    } catch (error) {
+        console.error('Fout bij bekijken antwoorden:', error);
+        this.showMessage('Fout: ' + error.message, 'error');
     }
+}
     
     async exportAnswers() {
         if (!this.currentSession) return;
