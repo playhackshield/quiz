@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App - Leraar Dashboard</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Session Creation Screen -->
+        <div id="session-creation" class="screen">
+            <div class="header">
+                <h1><i class="fas fa-chalkboard-teacher"></i> Quiz Dashboard - Leraar</h1>
+                <p>Start een nieuwe quiz sessie voor je klas</p>
+            </div>
+
+            <div class="card">
+                <h2><i class="fas fa-plus-circle"></i> Nieuwe Quiz Starten</h2>
+                
+                <div class="form-group">
+                    <label for="quiz-title"><i class="fas fa-heading"></i> Quiz Titel (optioneel)</label>
+                    <input type="text" id="quiz-title" placeholder="Bijv: Geschiedenis Toets Week 5">
+                </div>
+
+                <div class="form-group">
+                    <label for="questions-json"><i class="fas fa-question-circle"></i> Quiz Vragen</label>
+                    <textarea id="questions-json" rows="12" placeholder='[
+  {
+    "nr": 1,
+    "type": "meerkeuze",
+    "vraag": "Wat is de hoofdstad van Nederland?",
+    "opties": ["Amsterdam", "Rotterdam", "Den Haag", "Utrecht"],
+    "correct": 0
+  },
+  {
+    "nr": 2,
+    "type": "open",
+    "vraag": "Noem een rivier die door Nederland stroomt."
+  },
+  {
+    "nr": 3,
+    "type": "ja/nee", 
+    "vraag": "Is de aarde rond?"
+  }
+]'>[
+  {
+    "nr": 1,
+    "type": "meerkeuze",
+    "vraag": "Wat is de hoofdstad van Nederland?",
+    "opties": ["Amsterdam", "Rotterdam", "Den Haag", "Utrecht"],
+    "correct": 0
+  },
+  {
+    "nr": 2,
+    "type": "open",
+    "vraag": "Noem een rivier die door Nederland stroomt."
+  },
+  {
+    "nr": 3,
+    "type": "ja/nee",
+    "vraag": "Is de aarde rond?"
+  }
+]</textarea>
+                    <small class="hint">Voer vragen in JSON format in. Je kunt dit later aanpassen.</small>
+                </div>
+
+                <div class="form-actions">
+                    <button id="create-session-btn" class="btn btn-primary btn-large">
+                        <i class="fas fa-play"></i> Quiz Sessie Starten
+                    </button>
+                    <a href="index.html" class="btn btn-secondary">
+                        <i class="fas fa-home"></i> Terug naar Start
+                    </a>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h3><i class="fas fa-lightbulb"></i> Tips:</h3>
+                <ul>
+                    <li>Je krijgt een 4-cijferige code die je aan leerlingen geeft</li>
+                    <li>Leerlingen kunnen op elk device deelnemen (telefoon, tablet, laptop)</li>
+                    <li>Er is geen tijdslimiet per vraag</li>
+                    <li>Je kunt tijdens de quiz terug naar vorige vragen</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Active Session Screen -->
+        <div id="active-session" class="screen hidden">
+            <div class="session-header">
+                <div class="session-info">
+                    <h1><i class="fas fa-graduation-cap"></i> Live Quiz Sessie</h1>
+                    <div class="session-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-qrcode"></i>
+                            <span>Code: <strong id="session-code">----</strong></span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-users"></i>
+                            <span>Leerlingen: <strong id="student-count">0</strong></span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-question-circle"></i>
+                            <span>Vraag: <strong id="current-question-nr">1</strong>/<span id="total-questions">0</span></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="session-actions">
+                    <button id="copy-link-btn" class="btn btn-small">
+                        <i class="fas fa-link"></i> Kopieer Link
+                    </button>
+                    <button id="end-session-btn" class="btn btn-small btn-danger">
+                        <i class="fas fa-stop"></i> Stop Sessie
+                    </button>
+                </div>
+            </div>
+
+            <!-- Question Display -->
+            <div class="question-container">
+                <div class="question-header">
+                    <h2 id="question-text">Vraag wordt geladen...</h2>
+                    <div class="question-nav">
+                        <button id="prev-question-btn" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Vorige
+                        </button>
+                        <button id="next-question-btn" class="btn btn-primary">
+                            Volgende <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="question-content">
+                    <div id="question-display">
+                        <!-- Question options will be inserted here -->
+                    </div>
+                </div>
+
+                <div class="question-stats">
+                    <div class="stat">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Beantwoord: <strong id="answered-count">0</strong>/<span id="total-students">0</span></span>
+                    </div>
+                    <button id="view-answers-btn" class="btn btn-small">
+                        <i class="fas fa-eye"></i> Bekijk Antwoorden
+                    </button>
+                </div>
+            </div>
+
+            <!-- Student List -->
+            <div class="student-section">
+                <h3><i class="fas fa-users"></i> Leerlingen in deze sessie</h3>
+                <div class="student-list" id="student-list">
+                    <div class="empty-state">
+                        <i class="fas fa-user-clock"></i>
+                        <p>Nog geen leerlingen aangemeld</p>
+                        <small>Leerlingen kunnen deelnemen via de code: <strong id="display-code">----</strong></small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="bottom-nav">
+                <a href="index.html" class="btn btn-secondary">
+                    <i class="fas fa-home"></i> Startpagina
+                </a>
+                <div class="nav-buttons">
+                    <button id="export-btn" class="btn">
+                        <i class="fas fa-download"></i> Exporteer Antwoorden
+                    </button>
+                    <button id="session-settings-btn" class="btn">
+                        <i class="fas fa-cog"></i> Instellingen
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="screen hidden">
+            <div class="loading-content">
+                <div class="loading-spinner"></div>
+                <h2>Sessie laden...</h2>
+                <p>Even geduld alstublieft</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    
+    <!-- App JavaScript -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/teacher-app.js"></script>
+</body>
+</html>
