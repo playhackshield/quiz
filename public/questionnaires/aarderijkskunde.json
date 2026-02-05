@@ -1,0 +1,18 @@
+[
+  {
+    "type": "meerkeuze",
+    "vraag": "Wat is de grootste oceaan ter wereld?",
+    "opties": ["Atlantische Oceaan", "Indische Oceaan", "Stille Oceaan", "Noordelijke IJszee"],
+    "correct": 2
+  },
+  {
+    "type": "meerkeuze", 
+    "vraag": "Hoeveel continenten zijn er?",
+    "opties": ["5", "6", "7", "8"],
+    "correct": 2
+  },
+  {
+    "type": "open",
+    "vraag": "Noem drie landen in Zuid-Amerika."
+  }
+]

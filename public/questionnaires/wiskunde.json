@@ -1,0 +1,18 @@
+[
+  {
+    "type": "meerkeuze",
+    "vraag": "Wat is 15 × 7?",
+    "opties": ["95", "100", "105", "110"],
+    "correct": 2
+  },
+  {
+    "type": "meerkeuze",
+    "vraag": "Wat is de wortel van 144?",
+    "opties": ["10", "11", "12", "13"],
+    "correct": 2
+  },
+  {
+    "type": "open",
+    "vraag": "Los op: 3x + 7 = 22"
+  }
+]

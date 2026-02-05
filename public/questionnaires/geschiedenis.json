@@ -1,0 +1,22 @@
+[
+  {
+    "type": "meerkeuze",
+    "vraag": "In welk jaar begon de Tweede Wereldoorlog?",
+    "opties": ["1939", "1940", "1941", "1945"],
+    "correct": 0
+  },
+  {
+    "type": "meerkeuze",
+    "vraag": "Wie was de eerste president van de Verenigde Staten?",
+    "opties": ["George Washington", "Thomas Jefferson", "Abraham Lincoln", "John Adams"],
+    "correct": 0
+  },
+  {
+    "type": "open",
+    "vraag": "Noem twee belangrijke uitvindingen tijdens de Industriële Revolutie."
+  },
+  {
+    "type": "ja/nee",
+    "vraag": "Was Napoleon de keizer van Frankrijk?"
+  }
+]
