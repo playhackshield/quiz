@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Rapporten - Sessie Overzicht</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-chart-bar"></i> Quiz Rapporten</h1>
+            <p class="subtitle">Overzicht van alle quiz sessies</p>
+        </div>
+
+        <div class="navigation">
+            <a href="index.html" class="btn btn-secondary">
+                <i class="fas fa-home"></i> Startpagina
+            </a>
+            <a href="teacher.html" class="btn">
+                <i class="fas fa-chalkboard-teacher"></i> Leraar Dashboard
+            </a>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="card">
+            <h2><i class="fas fa-filter"></i> Filter sessies</h2>
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <label for="filter-date"><i class="fas fa-calendar"></i> Datum:</label>
+                    <select id="filter-date" class="filter-select">
+                        <option value="all">Alle datums</option>
+                        <option value="today">Vandaag</option>
+                        <option value="week">Deze week</option>
+                        <option value="month">Deze maand</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="filter-status"><i class="fas fa-power-off"></i> Status:</label>
+                    <select id="filter-status" class="filter-select">
+                        <option value="all">Alle sessies</option>
+                        <option value="active">Alleen actief</option>
+                        <option value="ended">Alleen beëindigd</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="search"><i class="fas fa-search"></i> Zoeken:</label>
+                    <input type="text" id="search" placeholder="Zoek op code of titel...">
+                </div>
+            </div>
+        </div>
+
+        <!-- Sessions List -->
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-list"></i> Sessies</h2>
+                <div class="header-actions">
+                    <button id="refresh-btn" class="btn btn-small">
+                        <i class="fas fa-sync-alt"></i> Verversen
+                    </button>
+                    <button id="export-all-btn" class="btn btn-small btn-success">
+                        <i class="fas fa-file-export"></i> Exporteer Alles
+                    </button>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table class="sessions-table">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Titel</th>
+                            <th>Datum</th>
+                            <th>Leerlingen</th>
+                            <th>Vragen</th>
+                            <th>Status</th>
+                            <th>Acties</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sessions-table-body">
+                        <tr>
+                            <td colspan="7" class="loading-cell">
+                                <div class="loading-spinner-small"></div>
+                                <span>Sessies laden...</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="table-footer">
+                <div class="pagination">
+                    <button id="prev-page" class="btn btn-small" disabled>
+                        <i class="fas fa-chevron-left"></i> Vorige
+                    </button>
+                    <span id="page-info">Pagina 1 van 1</span>
+                    <button id="next-page" class="btn btn-small" disabled>
+                        Volgende <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="summary">
+                    <span id="total-sessions">0 sessies</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Card -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="total-students-stat">0</h3>
+                    <p>Totaal leerlingen</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #10b981 0%, #047857 100%);">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="total-answers-stat">0</h3>
+                    <p>Totaal antwoorden</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                    <i class="fas fa-question-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="total-questions-stat">0</h3>
+                    <p>Totaal vragen</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="active-sessions-stat">0</h3>
+                    <p>Actieve sessies</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    
+    <!-- App JavaScript -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/reports-app.js"></script>
+</body>
+</html>
