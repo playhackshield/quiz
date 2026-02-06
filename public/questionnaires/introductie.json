@@ -13,7 +13,7 @@
   },
   {
     "type": "open",
-    "vraag": "WAT VIND JE HET MEEST LEUK?"
+    "vraag": "WAT VIND JE HET MINST LEUK OP SCHOOL?"
   },
   {
     "type": "open",
@@ -33,6 +33,26 @@
     "type": "meerkeuze",
     "vraag": "HOU JE MEER VAN SPELLETJES MET BEWEGING ERIN OF LIEVER IETS WAAR JE RUSTIG VOOR KUNT ZITTEN?",
     "opties": ["Beweging", "Rustig zitten"],
+    "correct": 2
+  },
+  {
+    "type": "open", 
+    "vraag": "WELKE GAMES SPEEL JE HET LIEFST (OP TELEFOON OF CONSOLE)?"
+  },
+  {
+    "type": "meerkeuze",
+    "vraag": "HEB JE EEN SMARTPHONE OF EEN TABLET?",
+    "opties": ["Ja", "Nee"],
+    "correct": 2
+  },
+  {
+    "type": "open", 
+    "vraag": "WELKE GAMES SPEEL JE HET LIEFST (OP TELEFOON OF CONSOLE)?"
+  },
+  {
+    "type": "meerkeuze",
+    "vraag": "ZIT JE OP SOCIAL MEDIA (TIK-TOK, INSTAGRAM, SNAPCHAT, ENZ.)?",
+    "opties": ["Ja", "Nee"],
     "correct": 2
   }
 ]
