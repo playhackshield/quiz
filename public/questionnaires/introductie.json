@@ -1,5 +1,11 @@
 [
   {
+    "type": "meerkeuze",
+    "vraag": "HEB JE TREK?",
+    "opties": ["Ja", "Nee"],
+    "correct": 2
+  },
+  {
     "type": "open",
     "vraag": "HOE ZIT HET MET JE ENERGIE OP DIT MOMENT? BEN JE MOE OF HEB JE NOG ENERGIE OM LES TE VOLGEN?"
   },
