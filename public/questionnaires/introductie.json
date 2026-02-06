@@ -1,7 +1,11 @@
 [
   {
     "type": "open",
-    "vraag": "WAAR BEN JE GOED IN?"
+    "vraag": "HOE ZIT HET MET JE ENERGIE OP DIT MOMENT? BEN JE MOE OF HEB JE NOG ENERGIE OM LES TE VOLGEN?"
+  },
+  {
+    "type": "open",
+    "vraag": "WAT DOE JE HET LIEFST IN JE EIGEN TIJD? WAAR BEN JE GOED IN?"
   },
   {
     "type": "open",
