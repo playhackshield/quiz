@@ -1,7 +1,7 @@
 // === FIREBASE CONFIGURATIE ===
 // VERVANG DEZE WAARDEN MET JE EIGEN FIREBASE CONFIG
 const firebaseConfig = {
-  apiKey: "AIzaSyC7oYc94e1ptrc3gKOedYmNMpPDJf5OBw4",
+  apiKey: "AIzaSyCO2ndD-lTBZpRrs-ZxIsBTVjPVza2sFXU",
   authDomain: "schoolquizapp-28abf.firebaseapp.com",
   projectId: "schoolquizapp-28abf",
   storageBucket: "schoolquizapp-28abf.firebasestorage.app",
