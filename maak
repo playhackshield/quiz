@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rename Fields</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <h1>Rename studentId to contenderId</h1>
+    <button onclick="startRename()">Start Rename</button>
+    <div id="status"></div>
+    
+    <script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCO2ndD-lTBZpRrs-ZxIsBTVjPVza2sFXU",
+  authDomain: "schoolquizapp-28abf.firebaseapp.com",
+  projectId: "schoolquizapp-28abf",
+  storageBucket: "schoolquizapp-28abf.firebasestorage.app",
+  messagingSenderId: "921022621334",
+  appId: "1:921022621334:web:ef582f1e067a77a41284b7"
+};
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        
+        async function startRename() {
+            const status = document.getElementById('status');
+            status.innerHTML = "Bezig met hernoemen...";
+            
+            try {
+                // Optie 1: Nieuw veld toevoegen (aanbevolen)
+                await addContenderIdField();
+                
+                // Optie 2: Oude veld verwijderen (optioneel)
+                // await removeStudentIdField();
+                
+                status.innerHTML = "<p style='color:green'>✅ Klaar! Controleer Firebase Console.</p>";
+            } catch (error) {
+                status.innerHTML = `<p style='color:red'>❌ Fout: ${error.message}</p>`;
+                console.error(error);
+            }
+        }
+        
+        async function addContenderIdField() {
+            const answersRef = db.collection('answers');
+            const snapshot = await answersRef.get();
+            
+            let batch = db.batch();
+            let batchCount = 0;
+            let totalUpdated = 0;
+            const batchSize = 500; // Firestore limiet per batch
+            
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                
+                if (data.studentId && !data.contenderId) {
+                    batch.update(doc.ref, {
+                        contenderId: data.studentId,
+                        renamedAt: new Date().toISOString()
+                    });
+                    batchCount++;
+                    totalUpdated++;
+                    
+                    // Firestore heeft limiet van 500 operations per batch
+                    if (batchCount >= batchSize) {
+                        batch.commit();
+                        batch = db.batch();
+                        batchCount = 0;
+                        console.log(`Batch committed, ${totalUpdated} total updated`);
+                    }
+                }
+            });
+            
+            // Commit laatste batch
+            if (batchCount > 0) {
+                await batch.commit();
+            }
+            
+            console.log(`✅ ${totalUpdated} documents bijgewerkt met contenderId`);
+            return totalUpdated;
+        }
+        
+        async function removeStudentIdField() {
+            const answersRef = db.collection('answers');
+            const snapshot = await answersRef.get();
+            
+            let batch = db.batch();
+            let batchCount = 0;
+            let totalRemoved = 0;
+            
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                
+                if (data.studentId && data.contenderId) {
+                    batch.update(doc.ref, {
+                        studentId: firebase.firestore.FieldValue.delete()
+                    });
+                    batchCount++;
+                    totalRemoved++;
+                    
+                    if (batchCount >= 500) {
+                        batch.commit();
+                        batch = db.batch();
+                        batchCount = 0;
+                    }
+                }
+            });
+            
+            if (batchCount > 0) {
+                await batch.commit();
+            }
+            
+            console.log(`🗑️ ${totalRemoved} documents met studentId verwijderd`);
+            return totalRemoved;
+        }
+    </script>
+</body>
+</html>
