@@ -178,7 +178,7 @@ class ReportsApp {
             });
             
             // Bepaal leerlingen count
-            const studentCount = session.studentCount || 0;
+            const contenderCount = session.contenderCount || 0;
             
             // Bepaal vragen count
             const questionCount = session.questions ? session.questions.length : 0;
@@ -210,9 +210,9 @@ class ReportsApp {
                         ${dateStr}
                         ${duration !== '-' ? `<small>${duration}</small>` : ''}
                     </td>
-                    <td class="session-students">
+                    <td class="session-contenders">
                         <i class="fas fa-users"></i>
-                        ${studentCount}
+                        ${contenderCount}
                     </td>
                     <td class="session-questions">
                         <i class="fas fa-question-circle"></i>
@@ -274,20 +274,20 @@ class ReportsApp {
     async updateStatistics() {
         try {
             // Haal alle leerlingen en antwoorden op voor statistieken
-            const [studentsSnapshot, answersSnapshot] = await Promise.all([
-                studentsCollection.get(),
+            const [contendersSnapshot, answersSnapshot] = await Promise.all([
+                contendersCollection.get(),
                 answersCollection.get()
             ]);
             
             // Bereken statistieken
-            const totalStudents = studentsSnapshot.size;
+            const totalContenders = contendersSnapshot.size;
             const totalAnswers = answersSnapshot.size;
             const totalQuestions = this.sessions.reduce((sum, session) => 
                 sum + (session.questions ? session.questions.length : 0), 0);
             const activeSessions = this.sessions.filter(s => s.active).length;
             
             // Update UI
-            document.getElementById('total-students-stat').textContent = totalStudents;
+            document.getElementById('total-contenders-stat').textContent = totalContenders;
             document.getElementById('total-answers-stat').textContent = totalAnswers;
             document.getElementById('total-questions-stat').textContent = totalQuestions;
             document.getElementById('active-sessions-stat').textContent = activeSessions;
@@ -307,12 +307,12 @@ class ReportsApp {
             await sessionsCollection.doc(sessionId).delete();
             
             // Verwijder bijbehorende leerlingen
-            const studentsSnapshot = await studentsCollection
+            const contendersSnapshot = await contendersCollection
                 .where('sessionId', '==', sessionId)
                 .get();
             
             const deletePromises = [];
-            studentsSnapshot.forEach(doc => {
+            contendersSnapshot.forEach(doc => {
                 deletePromises.push(doc.ref.delete());
             });
             
@@ -347,14 +347,14 @@ class ReportsApp {
             
             // Voor elke sessie, haal leerlingen en antwoorden op
             for (const session of this.sessions) {
-                const [studentsSnapshot, answersSnapshot] = await Promise.all([
-                    studentsCollection.where('sessionId', '==', session.id).get(),
+                const [contendersSnapshot, answersSnapshot] = await Promise.all([
+                    contendersCollection.where('sessionId', '==', session.id).get(),
                     answersCollection.where('sessionId', '==', session.id).get()
                 ]);
                 
-                const students = [];
-                studentsSnapshot.forEach(doc => {
-                    students.push({
+                const contenders = [];
+                contendersSnapshot.forEach(doc => {
+                    contenders.push({
                         id: doc.id,
                         ...doc.data()
                     });
@@ -370,9 +370,9 @@ class ReportsApp {
                 
                 exportData.sessions.push({
                     ...session,
-                    students,
+                    contenders,
                     answers,
-                    studentCount: students.length,
+                    contenderCount: contenders.length,
                     answerCount: answers.length
                 });
             }
