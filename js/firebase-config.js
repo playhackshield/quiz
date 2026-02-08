@@ -46,7 +46,7 @@ try {
 
 // ==================== FIRESTORE COLLECTIES ====================
 const sessionsCollection = db ? db.collection("sessions") : null;
-const studentsCollection = db ? db.collection("students") : null;
+const contendersCollection = db ? db.collection("contenders") : null;
 const answersCollection = db ? db.collection("answers") : null;
 
 // ==================== HELPER FUNCTIES ====================
@@ -109,7 +109,7 @@ window.firebase = firebase;
 window.db = db;
 window.auth = auth;
 window.sessionsCollection = sessionsCollection;
-window.studentsCollection = studentsCollection;
+window.contendersCollection = contendersCollection;
 window.answersCollection = answersCollection;
 window.generateSessionCode = generateSessionCode;
 window.validateQuestions = validateQuestions;
