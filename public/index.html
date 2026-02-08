@@ -42,6 +42,13 @@
         <input type="password" id="password" placeholder="Wachtwoord">
         <button onclick="login()">Inloggen</button>
         <div id="error" class="error"></div>
+
+        <div id="userBanner" class="user-banner">
+            <div>
+                Inglogd als: <strong id="currentUserEmail"></strong>
+                <span id="adminBadge" class="admin-badge" style="display: none;">ADMIN</span>
+            </div>
+        </div>        
     </div>
     
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
