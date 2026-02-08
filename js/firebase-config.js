@@ -113,12 +113,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   
   try {
     // Wacht 1 seconde zodat Firebase SDK kan laden
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Probeer in te loggen
-    await anonymousLogin();
-    console.log("✅ Ready voor gebruik!");
-    
+    await new Promise(resolve => setTimeout(resolve, 1000));    
   } catch (error) {
     console.error("❌ Kritieke fout bij startup:", error);
     
@@ -155,6 +150,6 @@ window.studentsCollection = studentsCollection;
 window.answersCollection = answersCollection;
 window.generateSessionCode = generateSessionCode;
 window.validateQuestions = validateQuestions;
-window.anonymousLogin = anonymousLogin;
+//window.anonymousLogin = anonymousLogin;
 
 console.log("Firebase config module geladen");
