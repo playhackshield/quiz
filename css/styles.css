@@ -151,7 +151,7 @@ p {
     border-top: 6px solid var(--primary-color);
 }
 
-.choice-card.student {
+.choice-card.contender {
     border-top: 6px solid var(--secondary-color);
 }
 
@@ -161,7 +161,7 @@ p {
     color: var(--primary-color);
 }
 
-.choice-card.student .card-icon {
+.choice-card.contender .card-icon {
     color: var(--secondary-color);
 }
 
@@ -494,7 +494,7 @@ textarea {
 }
 
 /* === STUDENT LIST === */
-.student-section {
+.contender-section {
     background: white;
     border-radius: var(--border-radius);
     padding: 2rem;
@@ -502,13 +502,13 @@ textarea {
     box-shadow: var(--box-shadow);
 }
 
-.student-list {
+.contender-list {
     max-height: 400px;
     overflow-y: auto;
     margin-top: 1.5rem;
 }
 
-.student-item {
+.contender-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -520,17 +520,17 @@ textarea {
     transition: var(--transition);
 }
 
-.student-item.answered {
+.contender-item.answered {
     border-left-color: var(--success-color);
     background: #f0fdf4;
 }
 
-.student-item:hover {
+.contender-item:hover {
     transform: translateX(5px);
     background: #f1f5f9;
 }
 
-.student-name {
+.contender-name {
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -538,12 +538,12 @@ textarea {
     color: var(--dark-color);
 }
 
-.student-status {
+.contender-status {
     font-size: 0.875rem;
     color: var(--gray-color);
 }
 
-.student-status.answered {
+.contender-status.answered {
     color: var(--success-color);
     font-weight: 600;
 }
