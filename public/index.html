@@ -29,16 +29,14 @@
     </style>
 </head>
 <body>
+    <div id="userBanner" class="user-banner">
+        <div>
+            Inglogd als: <strong id="currentUserEmail"></strong>
+            <span id="adminBadge" class="admin-badge" style="display: none;">ADMIN</span>
+        </div>
+    </div>
 
     <div class="login-box">
-        <div id="userBanner" class="user-banner" style="display: none;">
-            <div>
-                Inglogd als: <strong id="currentUserEmail"></strong>
-                <span id="adminBadge" class="admin-badge" style="display: none;">ADMIN</span>
-            </div>
-            <button onclick="logout()" class="btn-secondary">Uitloggen</button>
-        </div>
-
         <h2>Login</h2>
         <input type="email" id="email" placeholder="Email">
         <input type="password" id="password" placeholder="Wachtwoord">
