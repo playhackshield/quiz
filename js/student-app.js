@@ -11,9 +11,6 @@ class StudentApp {
     
     async init() {
         try {
-            // Wacht op Firebase login
-            //await anonymousLogin();
-            
             // Check voor bestaande sessie in localStorage
             const savedSession = localStorage.getItem('studentSession');
             if (savedSession) {
