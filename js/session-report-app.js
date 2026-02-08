@@ -19,7 +19,6 @@ class SessionReportApp {
                 throw new Error('Geen sessie ID gevonden in URL');
             }
             
-            await anonymousLogin();
             await this.loadSessionData();
             this.setupEventListeners();
             
