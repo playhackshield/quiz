@@ -338,8 +338,8 @@
     white-space: nowrap;
 }
 
-/* Student Report Cards */
-.student-report-card {
+/* Contender Report Cards */
+.contender-report-card {
     background: white;
     border-radius: var(--border-radius);
     border: 1px solid #e2e8f0;
@@ -348,12 +348,12 @@
     transition: var(--transition);
 }
 
-.student-report-card:hover {
+.contender-report-card:hover {
     border-color: var(--primary-color);
     box-shadow: var(--box-shadow);
 }
 
-.student-report-header {
+.contender-report-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -363,17 +363,17 @@
     transition: var(--transition);
 }
 
-.student-report-header:hover {
+.contender-report-header:hover {
     background: #f1f5f9;
 }
 
-.student-info {
+.contender-info {
     display: flex;
     align-items: center;
     gap: 1.5rem;
 }
 
-.student-avatar {
+.contender-avatar {
     width: 50px;
     height: 50px;
     background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
@@ -385,12 +385,12 @@
     font-size: 1.5rem;
 }
 
-.student-info h3 {
+.contender-info h3 {
     margin: 0 0 0.5rem;
     color: var(--dark-color);
 }
 
-.student-meta {
+.contender-meta {
     display: flex;
     flex-wrap: wrap;
     gap: 1.5rem;
@@ -398,7 +398,7 @@
     font-size: 0.9rem;
 }
 
-.student-meta span {
+.contender-meta span {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -409,18 +409,18 @@
     transition: transform 0.3s ease;
 }
 
-/* Student Answers Table */
-.student-answers-container {
+/* Contender Answers Table */
+.contender-answers-container {
     padding: 0 1.5rem 1.5rem;
 }
 
-.student-answers-table {
+.contender-answers-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.9rem;
 }
 
-.student-answers-table th {
+.contender-answers-table th {
     background: #f8fafc;
     padding: 0.75rem 1rem;
     text-align: left;
@@ -428,16 +428,16 @@
     border-bottom: 2px solid #e2e8f0;
 }
 
-.student-answers-table td {
+.contender-answers-table td {
     padding: 0.75rem 1rem;
     border-bottom: 1px solid #e2e8f0;
 }
 
-.student-answers-table tr.answered {
+.contender-answers-table tr.answered {
     background: #f0fdf4;
 }
 
-.student-answers-table tr.not-answered {
+.contender-answers-table tr.not-answered {
     background: #fef2f2;
     opacity: 0.7;
 }
@@ -500,12 +500,12 @@
         gap: 0.75rem;
     }
     
-    .student-meta {
+    .contender-meta {
         flex-direction: column;
         gap: 0.5rem;
     }
     
-    .student-answers-table {
+    .contender-answers-table {
         display: block;
         overflow-x: auto;
     }
