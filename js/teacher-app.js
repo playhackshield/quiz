@@ -3,7 +3,7 @@ class TeacherApp {
         this.currentSession = null;
         this.questions = [];
         this.currentQuestionIndex = 0;
-        this.students = new Map();
+        this.contenders = new Map();
         this.answers = new Map();
         this.questionnaires = [];
         this.selectedQuestionnaire = null;
@@ -122,7 +122,7 @@ async createSession() {
             questions: questions,
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             active: true,
-            studentCount: 0
+            contenderCount: 0
         };
         
         // Voeg questionnaire info toe als er een geselecteerd was
@@ -189,27 +189,27 @@ async loadSession(sessionId) {
         });
         
         // 👇 VERBETERDE VERSIE: Luister naar leerlingen
-        studentsCollection
+        contendersCollection
             .where('sessionId', '==', sessionId)
             .orderBy('joinedAt', 'asc')
             .onSnapshot((snapshot) => {
                 console.log("Leerlingen snapshot ontvangen:", snapshot.size, "leerlingen");
                 
-                this.students.clear();
+                this.contenders.clear();
                 snapshot.forEach(doc => {
-                    const studentData = doc.data();
-                    const student = {
+                    const contenderData = doc.data();
+                    const contender = {
                         id: doc.id,
-                        name: studentData.name,
-                        joinedAt: studentData.joinedAt,
-                        sessionId: studentData.sessionId
+                        name: contenderData.name,
+                        joinedAt: contenderData.joinedAt,
+                        sessionId: contenderData.sessionId
                     };
-                    this.students.set(doc.id, student);
-                    console.log("Leerling toegevoegd:", student.name, "(ID:", doc.id + ")");
+                    this.contenders.set(doc.id, contender);
+                    console.log("Leerling toegevoegd:", contender.name, "(ID:", doc.id + ")");
                 });
                 
-                this.updateStudentList();
-                this.updateSessionDisplay({}); // Update student count
+                this.updateContenderList();
+                this.updateSessionDisplay({}); // Update contender count
             }, (error) => {
                 console.error("Fout bij luisteren naar leerlingen:", error);
             });
@@ -223,11 +223,11 @@ async loadSession(sessionId) {
                 this.answers.clear();
                 snapshot.forEach(doc => {
                     const answer = doc.data();
-                    const key = `${answer.studentId}_${answer.questionNr}`;
+                    const key = `${answer.contenderId}_${answer.questionNr}`;
                     this.answers.set(key, answer);
                 });
                 
-                this.updateStudentList();
+                this.updateContenderList();
                 this.updateAnswerStats(); 
             }, (error) => {
                 console.error("Fout bij luisteren naar antwoorden:", error);
@@ -242,15 +242,15 @@ async loadSession(sessionId) {
 updateSessionDisplay(sessionData) {
     console.log("Update session display:", {
         code: sessionData.code,
-        studentCount: this.students.size
+        contenderCount: this.contenders.size
     });
     
     // DEBUG: Check of elementen bestaan
     const elements = {
         sessionCode: document.getElementById('session-code'),
         displayCode: document.getElementById('display-code'),
-        studentCount: document.getElementById('student-count'),
-        totalStudents: document.getElementById('total-students'),
+        contenderCount: document.getElementById('contender-count'),
+        totalContenders: document.getElementById('total-contenders'),
         totalQuestions: document.getElementById('total-questions')
     };
     
@@ -265,12 +265,12 @@ updateSessionDisplay(sessionData) {
         elements.displayCode.textContent = sessionData.code || this.currentSession?.code || '----';
     }
     
-    if (elements.studentCount) {
-        elements.studentCount.textContent = this.students.size;
+    if (elements.contenderCount) {
+        elements.contenderCount.textContent = this.contenders.size;
     }
     
-    if (elements.totalStudents) {
-        elements.totalStudents.textContent = this.students.size;
+    if (elements.totalContenders) {
+        elements.totalContenders.textContent = this.contenders.size;
     }
     
     if (elements.totalQuestions) {
@@ -360,13 +360,13 @@ updateSessionDisplay(sessionData) {
         `;
     }
     
-updateStudentList() {
-    const studentList = document.getElementById('student-list');
+updateContenderList() {
+    const contenderList = document.getElementById('contender-list');
     
-    console.log("Update student list voor vraag:", this.currentQuestionIndex + 1);
+    console.log("Update contender list voor vraag:", this.currentQuestionIndex + 1);
     
-    if (this.students.size === 0) {
-        studentList.innerHTML = `
+    if (this.contenders.size === 0) {
+        contenderList.innerHTML = `
             <div class="empty-state">
                 <i class="fas fa-user-clock"></i>
                 <p>Nog geen leerlingen aangemeld</p>
@@ -376,23 +376,23 @@ updateStudentList() {
         return;
     }
     
-    studentList.innerHTML = Array.from(this.students.values()).map(student => {
+    contenderList.innerHTML = Array.from(this.contenders.values()).map(contender => {
         // 👇 VERBETERDE CHECK: Alleen kijken naar antwoorden voor HUIDIGE vraag
         const hasAnswered = Array.from(this.answers.keys()).some(key => {
-            const [studentId, questionNr] = key.split('_');
-            return studentId === student.id && 
+            const [contenderId, questionNr] = key.split('_');
+            return contenderId === contender.id && 
                    parseInt(questionNr) === this.currentQuestionIndex; // 👈 Alleen huidige vraag!
         });
         
-        console.log(`Leerling ${student.name}: heeft geantwoord op vraag ${this.currentQuestionIndex + 1} = ${hasAnswered}`);
+        console.log(`Leerling ${contender.name}: heeft geantwoord op vraag ${this.currentQuestionIndex + 1} = ${hasAnswered}`);
         
         return `
-            <div class="student-item ${hasAnswered ? 'answered' : ''}">
-                <div class="student-name">
+            <div class="contender-item ${hasAnswered ? 'answered' : ''}">
+                <div class="contender-name">
                     <i class="fas fa-user"></i>
-                    ${student.name}
+                    ${contender.name}
                 </div>
-                <div class="student-status ${hasAnswered ? 'answered' : ''}">
+                <div class="contender-status ${hasAnswered ? 'answered' : ''}">
                     ${hasAnswered ? 
                         '<i class="fas fa-check-circle"></i> Beantwoord' : 
                         '<i class="far fa-clock"></i> Wachtend'}
@@ -416,11 +416,11 @@ updateAnswerStats() {
             }
         });
         
-        console.log(`📊 Antwoord stats: ${answeredCount}/${this.students.size} (vraag ${this.currentQuestionIndex + 1})`);
+        console.log(`📊 Antwoord stats: ${answeredCount}/${this.contenders.size} (vraag ${this.currentQuestionIndex + 1})`);
         
         // Update DOM - veilig met null checks
         const answeredEl = document.getElementById('answered-count');
-        const totalEl = document.getElementById('total-students');
+        const totalEl = document.getElementById('total-contenders');
         
         if (answeredEl) {
             answeredEl.textContent = answeredCount;
@@ -432,13 +432,13 @@ updateAnswerStats() {
         }
         
         if (totalEl) {
-            totalEl.textContent = this.students.size;
+            totalEl.textContent = this.contenders.size;
         } else {
-            console.warn("❌ Element 'total-students' niet gevonden");
+            console.warn("❌ Element 'total-contenders' niet gevonden");
         }
         
         // Update progress bar (optioneel)
-        this.updateProgressBar(answeredCount, this.students.size);
+        this.updateProgressBar(answeredCount, this.contenders.size);
         
     } catch (error) {
         console.error("Fout in updateAnswerStats:", error);
@@ -506,11 +506,11 @@ debugAnswersForCurrentQuestion() {
     
     let count = 0;
     this.answers.forEach((answer, key) => {
-        const [studentId, questionNr] = key.split('_');
+        const [contenderId, questionNr] = key.split('_');
         if (parseInt(questionNr) === this.currentQuestionIndex) {
             count++;
-            const student = this.students.get(studentId);
-            console.log(`  ${count}. ${student ? student.name : 'Onbekend'}: ${answer.answer}`);
+            const contender = this.contenders.get(contenderId);
+            console.log(`  ${count}. ${contender ? contender.name : 'Onbekend'}: ${answer.answer}`);
         }
     });
     
@@ -563,19 +563,19 @@ addToQuestionnaireDropdown(filename, displayName) {
     try {
         console.log("Bekijk antwoorden voor vraag:", this.currentQuestionIndex);
         console.log("Session ID:", this.currentSession.id);
-        console.log("Aantal leerlingen in memory:", this.students.size);
+        console.log("Aantal leerlingen in memory:", this.contenders.size);
         
         // Haal ALLE leerlingen op voor deze sessie
-        const studentsSnapshot = await studentsCollection
+        const contendersSnapshot = await contendersCollection
             .where('sessionId', '==', this.currentSession.id)
             .get();
         
-        // Maak een map van studentId -> studentName
-        const studentMap = new Map();
-        studentsSnapshot.forEach(doc => {
-            const studentData = doc.data();
-            studentMap.set(doc.id, studentData.name);
-            console.log("Leerling gevonden:", doc.id, "->", studentData.name);
+        // Maak een map van contenderId -> contenderName
+        const contenderMap = new Map();
+        contendersSnapshot.forEach(doc => {
+            const contenderData = doc.data();
+            contenderMap.set(doc.id, contenderData.name);
+            console.log("Leerling gevonden:", doc.id, "->", contenderData.name);
         });
         
         // Haal antwoorden op
@@ -596,15 +596,15 @@ addToQuestionnaireDropdown(filename, displayName) {
         
         answersSnapshot.forEach(doc => {
             const answer = doc.data();
-            const studentName = studentMap.get(answer.studentId) || 'Onbekende leerling';
+            const contenderName = contenderMap.get(answer.contenderId) || 'Onbekende leerling';
             
             console.log("Antwoord:", {
-                studentId: answer.studentId,
-                studentName: studentName,
+                contenderId: answer.contenderId,
+                contenderName: contenderName,
                 answer: answer.answer
             });
             
-            message += `${studentName}: ${answer.answer}\n`;
+            message += `${contenderName}: ${answer.answer}\n`;
             count++;
         });
         
@@ -804,7 +804,7 @@ getQuestionnaireDisplayName(filename) {
     }
     
     copySessionLink() {
-        const link = window.location.origin + '/student.html';
+        const link = window.location.origin + '/contender.html';
         navigator.clipboard.writeText(link)
             .then(() => {
                 this.showMessage('Link gekopieerd naar klembord!', 'success');
