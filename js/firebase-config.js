@@ -50,43 +50,6 @@ const studentsCollection = db ? db.collection("students") : null;
 const answersCollection = db ? db.collection("answers") : null;
 
 // ==================== HELPER FUNCTIES ====================
-async function anonymousLogin() {
-  if (!auth) {
-    throw new Error("Firebase Auth niet beschikbaar");
-  }
-  
-  try {
-    // Check of al ingelogd
-    if (auth.currentUser) {
-      console.log("Al ingelogd als:", auth.currentUser.uid);
-      return auth.currentUser;
-    }
-    
-    // Anonieme login
-    console.log("Anonieme login starten...");
-    const userCredential = await auth.signInAnonymously();
-    console.log("✅ Anoniem ingelogd als:", userCredential.user.uid);
-    return userCredential.user;
-    
-  } catch (error) {
-    console.error("❌ Fout bij anonieme login:", error);
-    
-    // Toon specifieke foutmelding
-    let errorMessage = "Login fout: ";
-    switch (error.code) {
-      case 'auth/configuration-not-found':
-        errorMessage += "Firebase configuratie incorrect. Controleer firebase-config.js";
-        break;
-      case 'auth/invalid-api-key':
-        errorMessage += "Ongeldige API key. Haal nieuwe config uit Firebase Console";
-        break;
-      default:
-        errorMessage += error.message;
-    }
-    
-    throw new Error(errorMessage);
-  }
-}
 
 function generateSessionCode() {
   return Math.floor(1000 + Math.random() * 9000).toString();
