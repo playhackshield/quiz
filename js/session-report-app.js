@@ -2,7 +2,7 @@ class SessionReportApp {
     constructor() {
         this.sessionId = null;
         this.sessionData = null;
-        this.students = [];
+        this.contenders = [];
         this.answers = [];
         this.questions = [];
         
@@ -46,13 +46,13 @@ class SessionReportApp {
             this.questions = this.sessionData.questions || [];
             
             // Laad leerlingen
-            const studentsSnapshot = await studentsCollection
+            const contendersSnapshot = await contendersCollection
                 .where('sessionId', '==', this.sessionId)
                 .get();
             
-            this.students = [];
-            studentsSnapshot.forEach(doc => {
-                this.students.push({
+            this.contenders = [];
+            contendersSnapshot.forEach(doc => {
+                this.contenders.push({
                     id: doc.id,
                     ...doc.data(),
                     joinedAt: doc.data().joinedAt ? doc.data().joinedAt.toDate() : null
@@ -76,7 +76,7 @@ class SessionReportApp {
             // Update UI
             this.updateSessionInfo();
             this.renderQuestionsSummary();
-            this.renderStudentReports();
+            this.renderContenderReports();
             this.updateStatistics();
             
         } catch (error) {
@@ -121,7 +121,7 @@ class SessionReportApp {
         }
         
         // Aantal leerlingen
-        document.getElementById('session-students-count').textContent = this.students.length;
+        document.getElementById('session-contenders-count').textContent = this.contenders.length;
         
         // Status badge
         const statusBadge = document.getElementById('session-status-badge');
@@ -159,8 +159,8 @@ class SessionReportApp {
                         ${this.questions.map((question, index) => {
                             const answersForQuestion = this.answers.filter(a => a.questionNr === index);
                             const answerCount = answersForQuestion.length;
-                            const participationRate = this.students.length > 0 ? 
-                                Math.round((answerCount / this.students.length) * 100) : 0;
+                            const participationRate = this.contenders.length > 0 ? 
+                                Math.round((answerCount / this.contenders.length) * 100) : 0;
                             
                             // Vind meest voorkomende antwoord
                             let mostCommonAnswer = '-';
@@ -190,7 +190,7 @@ class SessionReportApp {
                                     </td>
                                     <td class="question-answers">
                                         <div class="answer-stats">
-                                            <span class="answer-count">${answerCount}/${this.students.length}</span>
+                                            <span class="answer-count">${answerCount}/${this.contenders.length}</span>
                                             <div class="progress-bar">
                                                 <div class="progress-fill" style="width: ${participationRate}%"></div>
                                             </div>
@@ -207,10 +207,10 @@ class SessionReportApp {
         `;
     }
     
-    renderStudentReports() {
-        const container = document.getElementById('student-reports-container');
+    renderContenderReports() {
+        const container = document.getElementById('contender-reports-container');
         
-        if (this.students.length === 0) {
+        if (this.contenders.length === 0) {
             container.innerHTML = `
                 <div class="empty-state">
                     <i class="fas fa-user-graduate"></i>
@@ -220,33 +220,33 @@ class SessionReportApp {
             return;
         }
         
-        container.innerHTML = this.students.map(student => {
+        container.innerHTML = this.contenders.map(contender => {
             // Vind alle antwoorden van deze leerling
-            const studentAnswers = this.answers.filter(a => a.studentId === student.id);
+            const contenderAnswers = this.answers.filter(a => a.contenderId === contender.id);
             
             // Bereken statistieken
             const totalQuestions = this.questions.length;
-            const answeredCount = studentAnswers.length;
+            const answeredCount = contenderAnswers.length;
             const participationRate = totalQuestions > 0 ? 
                 Math.round((answeredCount / totalQuestions) * 100) : 0;
             
             // Groepeer antwoorden per vraag
             const answersByQuestion = {};
-            studentAnswers.forEach(answer => {
+            contenderAnswers.forEach(answer => {
                 answersByQuestion[answer.questionNr] = answer;
             });
             
             return `
-                <div class="student-report-card">
-                    <div class="student-report-header" onclick="app.toggleStudentAnswers('${student.id}')">
-                        <div class="student-info">
-                            <div class="student-avatar">
+                <div class="contender-report-card">
+                    <div class="contender-report-header" onclick="app.toggleContenderAnswers('${contender.id}')">
+                        <div class="contender-info">
+                            <div class="contender-avatar">
                                 <i class="fas fa-user"></i>
                             </div>
                             <div>
-                                <h3>${student.name}</h3>
-                                <div class="student-meta">
-                                    <span><i class="fas fa-calendar"></i> Aangemeld: ${student.joinedAt ? student.joinedAt.toLocaleTimeString('nl-NL') : '-'}</span>
+                                <h3>${contender.name}</h3>
+                                <div class="contender-meta">
+                                    <span><i class="fas fa-calendar"></i> Aangemeld: ${contender.joinedAt ? contender.joinedAt.toLocaleTimeString('nl-NL') : '-'}</span>
                                     <span><i class="fas fa-check-circle"></i> Antwoorden: ${answeredCount}/${totalQuestions}</span>
                                     <span><i class="fas fa-chart-line"></i> Deelname: ${participationRate}%</span>
                                 </div>
@@ -257,9 +257,9 @@ class SessionReportApp {
                         </div>
                     </div>
                     
-                    <div class="student-answers-container" id="answers-${student.id}" style="display: none;">
+                    <div class="contender-answers-container" id="answers-${contender.id}" style="display: none;">
                         ${totalQuestions > 0 ? `
-                            <table class="student-answers-table">
+                            <table class="contender-answers-table">
                                 <thead>
                                     <tr>
                                         <th>Vraag</th>
@@ -295,7 +295,7 @@ class SessionReportApp {
                                             <tr class="${answer ? 'answered' : 'not-answered'}">
                                                 <td class="question-nr">${index + 1}</td>
                                                 <td class="question-text">${questionText}</td>
-                                                <td class="student-answer">${answerText}</td>
+                                                <td class="contender-answer">${answerText}</td>
                                                 <td class="answer-time">${answerTime}</td>
                                                 <td class="answer-correct">${isCorrect}</td>
                                             </tr>
@@ -315,8 +315,8 @@ class SessionReportApp {
         }).join('');
     }
     
-    toggleStudentAnswers(studentId) {
-        const container = document.getElementById(`answers-${studentId}`);
+    toggleContenderAnswers(contenderId) {
+        const container = document.getElementById(`answers-${contenderId}`);
         const icon = container.previousElementSibling.querySelector('.toggle-icon i');
         
         if (container.style.display === 'none') {
@@ -329,7 +329,7 @@ class SessionReportApp {
     }
     
     expandAll() {
-        document.querySelectorAll('.student-answers-container').forEach(container => {
+        document.querySelectorAll('.contender-answers-container').forEach(container => {
             container.style.display = 'block';
         });
         document.querySelectorAll('.toggle-icon i').forEach(icon => {
@@ -338,7 +338,7 @@ class SessionReportApp {
     }
     
     collapseAll() {
-        document.querySelectorAll('.student-answers-container').forEach(container => {
+        document.querySelectorAll('.contender-answers-container').forEach(container => {
             container.style.display = 'none';
         });
         document.querySelectorAll('.toggle-icon i').forEach(icon => {
@@ -348,7 +348,7 @@ class SessionReportApp {
     
     updateStatistics() {
         // Deelname percentage
-        const totalPossibleAnswers = this.students.length * this.questions.length;
+        const totalPossibleAnswers = this.contenders.length * this.questions.length;
         const totalActualAnswers = this.answers.length;
         const participationRate = totalPossibleAnswers > 0 ? 
             Math.round((totalActualAnswers / totalPossibleAnswers) * 100) : 0;
@@ -384,25 +384,25 @@ class SessionReportApp {
         document.getElementById('avg-response-time').textContent = `${avgTime}s`;
         
         // Meest actieve leerling
-        const studentActivity = {};
+        const contenderActivity = {};
         this.answers.forEach(answer => {
-            studentActivity[answer.studentId] = (studentActivity[answer.studentId] || 0) + 1;
+            contenderActivity[answer.contenderId] = (contenderActivity[answer.contenderId] || 0) + 1;
         });
         
-        let topStudent = '-';
+        let topContender = '-';
         let maxAnswers = 0;
         
-        Object.entries(studentActivity).forEach(([studentId, answerCount]) => {
+        Object.entries(contenderActivity).forEach(([contenderId, answerCount]) => {
             if (answerCount > maxAnswers) {
                 maxAnswers = answerCount;
-                const student = this.students.find(s => s.id === studentId);
-                if (student) {
-                    topStudent = student.name;
+                const contender = this.contenders.find(s => s.id === contenderId);
+                if (contender) {
+                    topContender = contender.name;
                 }
             }
         });
         
-        document.getElementById('top-student').textContent = topStudent;
+        document.getElementById('top-contender').textContent = topContender;
     }
     
     getQuestionTypeLabel(type) {
@@ -445,7 +445,7 @@ class SessionReportApp {
     exportToJSON() {
         const exportData = {
             session: this.sessionData,
-            students: this.students,
+            contenders: this.contenders,
             questions: this.questions,
             answers: this.answers,
             exportDate: new Date().toISOString(),
@@ -453,7 +453,7 @@ class SessionReportApp {
                 participationRate: document.getElementById('participation-rate').textContent,
                 correctAnswers: parseInt(document.getElementById('correct-answers').textContent),
                 avgResponseTime: document.getElementById('avg-response-time').textContent,
-                topStudent: document.getElementById('top-student').textContent
+                topContender: document.getElementById('top-contender').textContent
             }
         };
         
@@ -466,13 +466,13 @@ class SessionReportApp {
         const headers = ['Leerling', 'Vraag Nr', 'Vraag', 'Antwoord', 'Tijdstip', 'Correct'];
         const rows = [];
         
-        this.students.forEach(student => {
-            const studentAnswers = this.answers.filter(a => a.studentId === student.id);
+        this.contenders.forEach(contender => {
+            const contenderAnswers = this.answers.filter(a => a.contenderId === contender.id);
             
-            studentAnswers.forEach(answer => {
+            contenderAnswers.forEach(answer => {
                 const question = this.questions[answer.questionNr];
                 const row = [
-                    student.name,
+                    contender.name,
                     answer.questionNr + 1,
                     question ? question.vraag : '',
                     this.formatAnswer(question, answer.answer),
@@ -498,7 +498,7 @@ class SessionReportApp {
             const ws = XLSX.utils.aoa_to_sheet([
                 ['Quiz Sessie Rapport', '', '', '', '', ''],
                 ['Code:', this.sessionData.code, '', 'Datum:', this.sessionData.createdAt?.toLocaleDateString('nl-NL') || '', ''],
-                ['Titel:', this.sessionData.title || '', '', 'Leerlingen:', this.students.length, ''],
+                ['Titel:', this.sessionData.title || '', '', 'Leerlingen:', this.contenders.length, ''],
                 ['', '', '', '', '', ''],
                 ['Antwoorden Overzicht', '', '', '', '', ''],
                 ['Leerling', 'Vraag Nr', 'Vraag', 'Antwoord', 'Tijdstip', 'Correct']
@@ -506,13 +506,13 @@ class SessionReportApp {
             
             // Voeg antwoorden toe
             const data = [];
-            this.students.forEach(student => {
-                const studentAnswers = this.answers.filter(a => a.studentId === student.id);
+            this.contenders.forEach(contender => {
+                const contenderAnswers = this.answers.filter(a => a.contenderId === contender.id);
                 
-                studentAnswers.forEach(answer => {
+                contenderAnswers.forEach(answer => {
                     const question = this.questions[answer.questionNr];
                     data.push([
-                        student.name,
+                        contender.name,
                         answer.questionNr + 1,
                         question ? question.vraag : '',
                         this.formatAnswer(question, answer.answer),
@@ -553,7 +553,7 @@ class SessionReportApp {
     }
     
     showError(message) {
-        const container = document.getElementById('student-reports-container');
+        const container = document.getElementById('contender-reports-container');
         container.innerHTML = `
             <div class="error-state">
                 <i class="fas fa-exclamation-triangle"></i>
