@@ -1,7 +1,7 @@
-class StudentApp {
+class ContenderApp {
     constructor() {
         this.currentSession = null;
-        this.studentInfo = null;
+        this.contenderInfo = null;
         this.currentQuestion = null;
         this.selectedAnswer = null;
         this.hasSubmitted = false;
@@ -12,9 +12,9 @@ class StudentApp {
     async init() {
         try {
             // Check voor bestaande sessie in localStorage
-            const savedSession = localStorage.getItem('studentSession');
+            const savedSession = localStorage.getItem('contenderSession');
             if (savedSession) {
-                this.studentInfo = JSON.parse(savedSession);
+                this.contenderInfo = JSON.parse(savedSession);
                 await this.joinExistingSession();
             } else {
                 this.showJoinScreen();
@@ -34,7 +34,7 @@ class StudentApp {
         document.getElementById('session-code-input').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') this.joinSession();
         });
-        document.getElementById('student-name-input').addEventListener('keypress', (e) => {
+        document.getElementById('contender-name-input').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') this.joinSession();
         });
         
@@ -65,8 +65,8 @@ class StudentApp {
         this.hideAllScreens();
         document.getElementById('waiting-screen').classList.remove('hidden');
         
-        if (this.studentInfo) {
-            document.getElementById('display-student-name').textContent = this.studentInfo.name;
+        if (this.contenderInfo) {
+            document.getElementById('display-contender-name').textContent = this.contenderInfo.name;
         }
         if (this.currentSession) {
             document.getElementById('display-session-code').textContent = this.currentSession.code;
@@ -77,8 +77,8 @@ class StudentApp {
         this.hideAllScreens();
         document.getElementById('question-screen').classList.remove('hidden');
         
-        if (this.studentInfo) {
-            document.getElementById('current-student-name').textContent = this.studentInfo.name;
+        if (this.contenderInfo) {
+            document.getElementById('current-contender-name').textContent = this.contenderInfo.name;
         }
     }
     
@@ -99,7 +99,7 @@ class StudentApp {
             this.showLoadingScreen();
             
             // Zoek de sessie op ID
-            const sessionDoc = await sessionsCollection.doc(this.studentInfo.sessionId).get();
+            const sessionDoc = await sessionsCollection.doc(this.contenderInfo.sessionId).get();
             
             if (!sessionDoc.exists || !sessionDoc.data().active) {
                 throw new Error('Sessie niet gevonden of beëindigd');
@@ -117,7 +117,7 @@ class StudentApp {
             
         } catch (error) {
             console.error('Fout bij herverbinden:', error);
-            localStorage.removeItem('studentSession');
+            localStorage.removeItem('contenderSession');
             this.showJoinScreen();
             this.showError('Sessie niet meer beschikbaar. Voer de code opnieuw in.');
         }
@@ -126,7 +126,7 @@ class StudentApp {
 async joinSession() {
     try {
         const code = document.getElementById('session-code-input').value.trim();
-        const name = document.getElementById('student-name-input').value.trim();
+        const name = document.getElementById('contender-name-input').value.trim();
         
         // Validatie
         if (!code || code.length !== 4) {
@@ -166,29 +166,29 @@ async joinSession() {
         // Voeg leerling toe aan sessie
         console.log("Leerling toevoegen:", name, "aan sessie:", sessionDoc.id);
         
-        const studentRef = await studentsCollection.add({
+        const contenderRef = await contendersCollection.add({
             sessionId: sessionDoc.id,
             name: name,
             joinedAt: firebase.firestore.FieldValue.serverTimestamp()
         });
         
-        console.log("Leerling toegevoegd met ID:", studentRef.id);
+        console.log("Leerling toegevoegd met ID:", contenderRef.id);
         
         this.currentSession = {
             id: sessionDoc.id,
             ...sessionData
         };
         
-        this.studentInfo = {
-            id: studentRef.id,
+        this.contenderInfo = {
+            id: contenderRef.id,
             sessionId: sessionDoc.id,
             name: name
         };
         
         // Sla op in localStorage
-        localStorage.setItem('studentSession', JSON.stringify(this.studentInfo));
+        localStorage.setItem('contenderSession', JSON.stringify(this.contenderInfo));
         
-        console.log("Student info opgeslagen:", this.studentInfo);
+        console.log("Contender info opgeslagen:", this.contenderInfo);
         
         // Luister naar sessie updates
         this.setupSessionListener();
@@ -209,7 +209,7 @@ async joinSession() {
         sessionsCollection.doc(this.currentSession.id).onSnapshot((doc) => {
             if (!doc.exists) {
                 this.showError('Sessie is beëindigd');
-                localStorage.removeItem('studentSession');
+                localStorage.removeItem('contenderSession');
                 this.showJoinScreen();
                 return;
             }
@@ -218,7 +218,7 @@ async joinSession() {
             
             if (!sessionData.active) {
                 this.showError('Sessie is beëindigd door de leraar');
-                localStorage.removeItem('studentSession');
+                localStorage.removeItem('contenderSession');
                 this.showJoinScreen();
                 return;
             }
@@ -403,12 +403,12 @@ displayYesNo() {
     });
 }    
     async checkExistingAnswer() {
-        if (!this.studentInfo || !this.currentQuestion) return;
+        if (!this.contenderInfo || !this.currentQuestion) return;
         
         try {
             const answersSnapshot = await answersCollection
                 .where('sessionId', '==', this.currentSession.id)
-                .where('studentId', '==', this.studentInfo.id)
+                .where('contenderId', '==', this.contenderInfo.id)
                 .where('questionNr', '==', this.currentQuestion.nr - 1) // 0-based index
                 .limit(1)
                 .get();
@@ -429,7 +429,7 @@ displayYesNo() {
     }
     
     async submitAnswer() {
-        if (!this.studentInfo || !this.currentQuestion || !this.currentSession) {
+        if (!this.contenderInfo || !this.currentQuestion || !this.currentSession) {
             this.showError('Niet verbonden met sessie');
             return;
         }
@@ -443,7 +443,7 @@ displayYesNo() {
             // Controleer of er al een antwoord is
             const existingAnswers = await answersCollection
                 .where('sessionId', '==', this.currentSession.id)
-                .where('studentId', '==', this.studentInfo.id)
+                .where('contenderId', '==', this.contenderInfo.id)
                 .where('questionNr', '==', this.currentQuestion.nr - 1)
                 .limit(1)
                 .get();
@@ -459,7 +459,7 @@ displayYesNo() {
                 // Maak nieuw antwoord
                 await answersCollection.add({
                     sessionId: this.currentSession.id,
-                    studentId: this.studentInfo.id,
+                    contenderId: this.contenderInfo.id,
                     questionNr: this.currentQuestion.nr - 1, // 0-based index
                     answer: this.selectedAnswer,
                     submittedAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -530,7 +530,7 @@ changeAnswer() {
     
     async leaveSession() {
         if (confirm('Weet je zeker dat je de sessie wilt verlaten?')) {
-            localStorage.removeItem('studentSession');
+            localStorage.removeItem('contenderSession');
             this.showJoinScreen();
         }
     }
@@ -555,5 +555,5 @@ changeAnswer() {
 
 // Initialiseer de app wanneer de pagina laadt
 document.addEventListener('DOMContentLoaded', () => {
-    new StudentApp();
+    new ContenderApp();
 });
