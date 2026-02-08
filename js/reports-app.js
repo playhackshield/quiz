@@ -16,7 +16,6 @@ class ReportsApp {
     
     async init() {
         try {
-            await anonymousLogin();
             this.setupEventListeners();
             await this.loadSessions();
             this.setupFilters();
