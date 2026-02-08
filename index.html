@@ -29,7 +29,7 @@
 
         <div id="userBanner" class="user-banner">
             <div>
-                Ingelogd als: <strong id="currentUserEmail"></strong>
+                <strong id="currentUserEmail"></strong>
                 <button onclick="logout()">Uitloggen</button>
             </div>
         </div>        
@@ -82,9 +82,9 @@
             
             if (user) {
                 banner.style.display = 'flex';
-                document.getElementById('currentUserEmail').textContent = user.email;
+                document.getElementById('currentUserEmail').textContent = 'Ingelogd als: ' + user.email;
             } else {
-                document.getElementById('currentUserEmail').textContent = '(Niet ingelogd)';
+                document.getElementById('currentUserEmail').textContent = 'Niet ingelogd';
             }
         }
         
