@@ -18,7 +18,6 @@ class ReportsApp {
         try {
             this.setupEventListeners();
             await this.loadSessions();
-            this.setupFilters();
             
         } catch (error) {
             console.error('Initialisatie fout:', error);
