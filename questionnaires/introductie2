@@ -1,0 +1,133 @@
+[
+  {
+    "type": "meerkeuze",
+    "vraag": "Hoe zit het met je energie op dit moment? ⚡️ Ben je moe of heb je nog energie om les te volgen?",
+    "opties": [
+      "😄 Ik heb nog veel energie",
+      "🙂 Ik voel mij gewoon",
+      "😴 Ik ben een beetje moe",
+      "🥱 Ik ben heel moe"
+    ],
+    "correct": 1
+  },
+  {
+    "type": "open",
+    "vraag": "Wat is jouw favoriete onderdeel van school? 📚 (bijvoorbeeld rekenen, taal of iets anders)"
+  },
+  {
+    "type": "open",
+    "vraag": "Wat vind jij het minst leuk op school? 😅"
+  },
+  {
+    "type": "open",
+    "vraag": "Wat voor soort spelletjes zou je willen spelen in de klas? 🎲"
+  },
+  {
+    "type": "meerkeuze",
+    "vraag": "Speel je liever alleen of samen met anderen? 🧑‍🤝‍🧑",
+    "opties": [
+      "🙋 Alleen",
+      "👫 Samen in een groep",
+      "😄 Allebei"
+    ],
+    "correct": 2
+  },
+  {
+    "type": "meerkeuze",
+    "vraag": "Hou je meer van spelletjes met beweging of rustig zitten? 🏃‍♂️🪑",
+    "opties": [
+      "🏃‍♂️ Beweging",
+      "🪑 Rustig zitten",
+      "😄 Allebei"
+    ],
+    "correct": 2
+  },
+  {
+    "type": "open",
+    "vraag": "Wat doe jij het liefst in je vrije tijd? ⭐ Waar ben je goed in?"
+  },
+  {
+    "type": "meerkeuze",
+    "vraag": "Wat doe jij het liefst op een scherm? 📱",
+    "opties": [
+      "🎮 Spelletjes spelen",
+      "📺 Filmpjes kijken",
+      "💬 Met anderen praten",
+      "📚 Iets leren"
+    ],
+    "correct": 1
+  },
+  {
+    "type": "open",
+    "vraag": "Waar zou jij je op school het liefst mee bezig willen houden? 🎯"
+  },
+  {
+    "type": "open",
+    "vraag": "Welke games speel jij het liefst? 🎮"
+  },
+  {
+    "type": "meerkeuze",
+    "vraag": "Heb jij een telefoon of tablet? 📱",
+    "opties": [
+      "📱 Ja, allebei",
+      "🙂 Ja, één van de twee",
+      "🤝 Nee, ik leen er soms één",
+      "❌ Nee"
+    ],
+    "correct": 2
+  },
+  {
+    "type": "meerkeuze",
+    "vraag": "Zit jij op social media (zoals TikTok of Instagram)? 📲",
+    "opties": [
+      "😄 Ja",
+      "🙂 Soms",
+      "❌ Nee"
+    ],
+    "correct": 2
+  },
+  {
+    "type": "meerkeuze",
+    "vraag": "Op welk apparaat zit jij het meest? 💻",
+    "opties": [
+      "📱 Telefoon",
+      "💻 Laptop / computer",
+      "📺 Tablet",
+      "🎮 Gameconsole"
+    ],
+    "correct": 2
+  },
+  {
+    "type": "meerkeuze",
+    "vraag": "Speel jij wel eens online met anderen? 🌐",
+    "opties": [
+      "😄 Ja, vaak",
+      "🙂 Soms",
+      "😅 Bijna nooit",
+      "❌ Nooit"
+    ],
+    "correct": 2
+  },
+  {
+    "type": "meerkeuze",
+    "vraag": "Wat doe jij als een spel héél leuk is? 😄",
+    "opties": [
+      "🎮 Ik blijf doorgaan",
+      "🙋 Ik vraag of ik langer mag",
+      "⏹️ Ik stop op tijd",
+      "🤷 Ik weet het niet"
+    ],
+    "correct": 2
+  },
+  {
+    "type": "meerkeuze",
+    "vraag": "Aan wie vraag jij hulp als er iets online gebeurt? 🤔",
+    "opties": [
+      "👩‍👦 Mama / papa",
+      "👩‍🏫 Meester / juf",
+      "🧑‍🤝‍🧑 Vriend / vriendin",
+      "🙈 Niemand"
+    ],
+    "correct": 1
+  }
+]
