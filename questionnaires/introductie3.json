@@ -1,0 +1,154 @@
+[
+  {
+    "type": "meerkeuze",
+    "vraag": "Hoe was je vakantie 🌴? Wat voor gevoel had je vooral?",
+    "opties": [
+      "😄 Ik heb genoten van de vakantie",
+      "🙂 Het was oke",
+      "🥱 Het was een beetje saai",
+      "😴 Ik vond het niet veel aan"
+    ],
+    "correct": 1
+  },
+  {
+    "type": "open",
+    "vraag": "Wat deed jij het liefst in je vrije tijd? ⭐ Houd je meer van beweging of meer van rustig stil zitten?"
+  },
+  {
+    "type": "meerkeuze",
+    "vraag": "Miste je school?",
+    "opties": [
+      "🚫 Helemaal niet",
+      "🤏🏽 Een beetje",
+      "🫡 Enorm"
+    ],
+    "correct": 1
+  },
+  {
+    "type": "open",
+    "vraag": "Wat vind jij het minst leuk op school? 😅"
+  },
+  {
+    "type": "open",
+    "vraag": "Wat is jouw favoriete onderdeel van school? 📚 (bijvoorbeeld rekenen, taal of iets anders)"
+  },
+  {
+    "type": "meerkeuze",
+    "vraag": "Als je 3 uur extra vrije tijd kreeg vandaag, zou je dan gamen, film kijken, buiten spelen of iets creatiefs doen? 🏃‍♂️🪑🎮",
+    "opties": [
+      "🎮 Gamen",
+      "🎞️ Film kijken",
+      "🏃‍♂️ Buiten spelen",
+      "🎨 Iets creatiefs doen"
+    ],
+    "correct": 2
+  },
+  {
+    "type": "meerkeuze",
+    "vraag": "Heb jij een telefoon, computer of gameconsole? 📱",
+    "opties": [
+      "📱 Telefoon / tablet",
+      "💻 Laptop / computer",
+      "🎮 Gameconsole",
+      "📱💻🎮 Meerdere"
+    ],
+    "correct": 2
+  },
+  {
+    "type": "meerkeuze",
+    "vraag": "Welke mis je het meest als hij stuk is? 💻",
+    "opties": [
+      "📱 Telefoon / tablet",
+      "💻 Laptop / computer",
+      "🎮 Gameconsole",
+      "🚫 Geen van allen"
+    ],
+    "correct": 2
+  },
+  {
+    "type": "meerkeuze",
+    "vraag": "Wat doe jij het liefst op een scherm? 📱",
+    "opties": [
+      "🎮 Spelletjes spelen",
+      "📺 Filmpjes kijken",
+      "💬 Met anderen praten",
+      "📚 Iets leren"
+    ],
+    "correct": 1
+  },
+  {
+    "type": "open",
+    "vraag": "Welke games speel jij het liefst? 🎮"
+  },
+  {
+    "type": "meerkeuze",
+    "vraag": "Speel je liever alleen of samen met anderen? 🧑‍🤝‍🧑",
+    "opties": [
+      "🙋 Alleen",
+      "👫 Samen in een groep",
+      "😄 Allebei"
+    ],
+    "correct": 2
+  },
+  {
+    "type": "meerkeuze",
+    "vraag": "Stelling: In een game vind ik winnen belangrijker dan samen lol hebben.",
+    "opties": [
+      "💚 Mee eens",
+      "❌ Niet mee eens"
+    ],
+    "correct": 1
+  },
+  {
+    "type": "meerkeuze",
+    "vraag": "Wat doe jij als een spel héél leuk is? 😄",
+    "opties": [
+      "🎮 Ik blijf doorgaan",
+      "🙋 Ik vraag of ik langer mag",
+      "⏹️ Ik stop op tijd",
+      "🤷 Ik weet het niet"
+    ],
+    "correct": 2
+  },
+  {
+    "type": "meerkeuze",
+    "vraag": "Zit jij op social media (zoals TikTok of Instagram)? 📲",
+    "opties": [
+      "😄 Ja",
+      "🙂 Soms",
+      "❌ Nee"
+    ],
+    "correct": 2
+  },
+  {
+    "type": "meerkeuze",
+    "vraag": "Aan wie vraag jij hulp als er iets online gebeurt? 🤔",
+    "opties": [
+      "👩‍👦 Mama / papa",
+      "👩‍🏫 Meester / juf",
+      "🧑‍🤝‍🧑 Vriend / vriendin",
+      "🙈 Niemand"
+    ],
+    "correct": 1
+  },
+  {
+    "type": "meerkeuze",
+    "vraag": "Stelling: Ik zou mijn beste vriend(in) mijn wachtwoord geven als hij/zij erom vraagt.",
+    "opties": [
+      "💚 Ja",
+      "❌ Nee"
+    ],
+    "correct": 1
+  },
+  {
+    "type": "meerkeuze",
+    "vraag": "Je ziet iemand in een game keihard afzeiken. Wat doe jij? 🤔",
+    "opties": [
+      "🤜 Meedoen",
+      "🤚🏽 Stoppen",
+      "🥷🏽 De ander helpen / verdedigen",
+      "🗣️ Rapporteren / Vertellen aan een leraar of ouder"
+    ],
+    "correct": 1
+  }
+]
