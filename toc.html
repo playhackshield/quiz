@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inhoudsopgave - Quiz Apps</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f1f5f9;
+      color: #0f172a;
+      margin: 0;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      color: #1e293b;
+      margin: 0 0 10px 0;
+    }
+
+    header p {
+      color: #64748b;
+      font-size: 1.1rem;
+      margin: 0;
+    }
+
+    .app-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 25px;
+    }
+
+    .app-card {
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e2e8f0;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .app-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    }
+
+    .app-title {
+      font-size: 1.5rem;
+      margin: 0 0 20px 0;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #3b82f6;
+      color: #1e3a8a;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .link-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .link-item a {
+      display: flex;
+      flex-direction: column;
+      padding: 12px 16px;
+      background-color: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      text-decoration: none;
+      color: #334155;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .link-item a:hover {
+      background-color: #2563eb;
+      color: white;
+      border-color: #2563eb;
+    }
+
+    .link-item a:hover .description {
+      color: #e0e7ff;
+    }
+
+    .link-title {
+      font-size: 1.05rem;
+    }
+
+    .description {
+      font-size: 0.85rem;
+      color: #64748b;
+      font-weight: normal;
+      margin-top: 3px;
+    }
+
+    /* Subgroep accenten voor team-specifieke links */
+    .sub-group {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed #cbd5e1;
+    }
+
+    .sub-group-title {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #94a3b8;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Quiz & Interactie Dashboard</h1>
+      <p>Selecteer een applicatie of scherm om te openen</p>
+    </header>
+
+    <main class="app-grid">
+      
+      <!-- APPLICATIE 1: Questionnaire -->
+      <section class="app-card">
+        <h2 class="app-title">📋 Questionnaire</h2>
+        <ul class="link-list">
+          <li class="link-item">
+            <a href="teacher.html" target="_blank">
+              <span class="link-title">teacher.html</span>
+              <span class="description">Docentenscherm om op het digibord te tonen</span>
+            </a>
+          </li>
+          <li class="link-item">
+            <a href="contender.html" target="_blank">
+              <span class="link-title">contender.html</span>
+              <span class="description">Leerlingenscherm voor op de computer</span>
+            </a>
+          </li>
+          <li class="link-item">
+            <a href="reports.html" target="_blank">
+              <span class="link-title">reports.html</span>
+              <span class="description">Rapportages en resultatenoverzicht</span>
+            </a>
+          </li>
+        </ul>
+      </section>
+
+      <!-- APPLICATIE 2: Vragen-quiz -->
+      <section class="app-card">
+        <h2 class="app-title">🎯 Vragen-quiz</h2>
+        <ul class="link-list">
+          <li class="link-item">
+            <a href="quizdigibord.html" target="_blank">
+              <span class="link-title">quizdigibord.html</span>
+              <span class="description">Digibord Server-pagina</span>
+            </a>
+          </li>
+
+          <div class="sub-group">
+            <div class="sub-group-title">Chromebook Interfaces</div>
+            <li class="link-item">
+              <a href="quizchromebook.html?antwoord=a" target="_blank">
+                <span class="link-title">Chromebook A</span>
+                <span class="description">quizchromebook.html?antwoord=a</span>
+              </a>
+            </li>
+            <li class="link-item">
+              <a href="quizchromebook.html?antwoord=b" target="_blank">
+                <span class="link-title">Chromebook B</span>
+                <span class="description">quizchromebook.html?antwoord=b</span>
+              </a>
+            </li>
+            <li class="link-item">
+              <a href="quizchromebook.html?antwoord=c" target="_blank">
+                <span class="link-title">Chromebook C</span>
+                <span class="description">quizchromebook.html?antwoord=c</span>
+              </a>
+            </li>
+            <li class="link-item">
+              <a href="quizchromebook.html?antwoord=d" target="_blank">
+                <span class="link-title">Chromebook D</span>
+                <span class="description">quizchromebook.html?antwoord=d</span>
+              </a>
+            </li>
+          </div>
+        </ul>
+      </section>
+
+      <!-- SJABLOON VOOR TOEKOMSTIGE APPLICATIE (Kopiëren & Plakken) -->
+      <!-- 
+      <section class="app-card">
+        <h2 class="app-title">🚀 Nieuwe Applicatie</h2>
+        <ul class="link-list">
+          <li class="link-item">
+            <a href="pagina.html" target="_blank">
+              <span class="link-title">pagina.html</span>
+              <span class="description">Beschrijving van het scherm</span>
+            </a>
+          </li>
+        </ul>
+      </section>
+      -->
+
+    </main>
+  </div>
+
+</body>
+</html>
