@@ -2,7 +2,9 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Digibord - Quiz Server</title>
+  
   <!-- Firebase Compat SDK's -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -11,38 +13,259 @@
   <!-- App Scripts -->
   <script src="js/firebase-config.js"></script>
   <script src="js/quizdigibord.js" defer></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f0f4f8;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #1e293b;
+      margin-top: 0;
+      font-size: 2.2rem;
+    }
+
+    /* Controls bovenaan */
+    .control-panel {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      justify-content: center;
+      background: #f8fafc;
+      padding: 15px;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      margin-bottom: 25px;
+    }
+
+    label {
+      font-weight: 600;
+      color: #475569;
+    }
+
+    select {
+      padding: 10px 15px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      font-size: 1rem;
+      background: white;
+      cursor: pointer;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background-color: #2563eb;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: #1d4ed8;
+    }
+
+    .btn-nav {
+      background-color: #64748b;
+      color: white;
+      font-size: 1.1rem;
+      padding: 12px 24px;
+    }
+
+    .btn-nav:hover {
+      background-color: #475569;
+    }
+
+    /* Vraag & Antwoorden styling */
+    .vraag-header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    #emoji {
+      font-size: 3rem;
+      margin: 0 0 10px 0;
+    }
+
+    #vraag-tekst {
+      font-size: 1.8rem;
+      color: #0f172a;
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    .opties-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      list-style: none;
+      padding: 0;
+      margin: 25px 0;
+    }
+
+    .optie-card {
+      padding: 20px;
+      border-radius: 12px;
+      color: white;
+      font-size: 1.3rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .optie-card::before {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 50%;
+      margin-right: 15px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    /* Antwoord Kleuren */
+    #optie-A {
+      background-color: #e11d48; /* Rood */
+    }
+    #optie-A::before { content: "A"; }
+
+    #optie-B {
+      background-color: #2563eb; /* Blauw */
+    }
+    #optie-B::before { content: "B"; }
+
+    #optie-C {
+      background-color: #d97706; /* Geel / Amber */
+    }
+    #optie-C::before { content: "C"; }
+
+    #optie-D {
+      background-color: #16a34a; /* Groen */
+    }
+    #optie-D::before { content: "D"; }
+
+    /* Status & Navigatie */
+    .status-bar {
+      text-align: center;
+      font-size: 1.1rem;
+      color: #64748b;
+      margin-bottom: 20px;
+    }
+
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 30px;
+    }
+
+    /* Scoreboard */
+    .scoreboard {
+      background: #f1f5f9;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .scoreboard h3 {
+      margin-top: 0;
+      color: #334155;
+      font-size: 1.4rem;
+    }
+
+    .scores {
+      display: flex;
+      justify-content: space-around;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .team-score {
+      background: white;
+      padding: 15px 30px;
+      border-radius: 10px;
+      border: 2px solid #e2e8f0;
+      min-width: 180px;
+    }
+
+    .team-a { color: #2563eb; }
+    .team-b { color: #dc2626; }
+  </style>
 </head>
 <body>
-  <h1>Digibord Quiz Server</h1>
 
-  <label for="vragenlijst">Kies vragenlijst:</label>
-  <select id="vragenlijst">
-    <option value="vragen1.json">Vragenlijst 1</option>
-    <option value="vragen2.json">Vragenlijst 2</option>
-  </select>
-  <button onclick="startSessie()">Start Sessie</button>
+  <div class="container">
+    <h1>Digibord Quiz Server</h1>
 
-  <hr>
+    <div class="control-panel">
+      <label for="vragenlijst">Kies vragenlijst:</label>
+      <select id="vragenlijst">
+        <option value="vragen1.json">Vragenlijst 1</option>
+        <option value="vragen2.json">Vragenlijst 2</option>
+      </select>
+      <button class="btn-primary" onclick="startSessie()">Start Sessie</button>
+    </div>
 
-  <div id="quiz-box" style="display:none;">
-    <h2 id="emoji"></h2>
-    <h2 id="vraag-tekst"></h2>
-    
-    <ol type="A">
-      <li id="optie-A"></li>
-      <li id="optie-B"></li>
-      <li id="optie-C"></li>
-      <li id="optie-D"></li>
-    </ol>
+    <div id="quiz-box" style="display:none;">
+      <div class="vraag-header">
+        <h2 id="emoji"></h2>
+        <h2 id="vraag-tekst"></h2>
+      </div>
+      
+      <ul class="opties-grid">
+        <li class="optie-card" id="optie-A"></li>
+        <li class="optie-card" id="optie-B"></li>
+        <li class="optie-card" id="optie-C"></li>
+        <li class="optie-card" id="optie-D"></li>
+      </ul>
 
-    <p><strong>Status:</strong> <span id="status-tekst">Aan het wachten...</span></p>
+      <p class="status-bar"><strong>Status:</strong> <span id="status-tekst">Aan het wachten...</span></p>
 
-    <button onclick="vorigeVraag()">Vorige Vraag</button>
-    <button onclick="volgendeVraag()">Volgende Vraag</button>
+      <div class="nav-buttons">
+        <button class="btn-nav" onclick="vorigeVraag()">← Vorige Vraag</button>
+        <button class="btn-nav" onclick="volgendeVraag()">Volgende Vraag →</button>
+      </div>
 
-    <h3>Scoreboard</h3>
-    <p>Team A: <b id="score-A">0</b> punten</p>
-    <p>Team B: <b id="score-B">0</b> punten</p>
+      <div class="scoreboard">
+        <h3>Scoreboard</h3>
+        <div class="scores">
+          <div class="team-score team-a">Team A: <span id="score-A">0</span> pt</div>
+          <div class="team-score team-b">Team B: <span id="score-B">0</span> pt</div>
+        </div>
+      </div>
+    </div>
   </div>
+
 </body>
 </html>
