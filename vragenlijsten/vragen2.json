@@ -1,0 +1,14 @@
+[
+  {
+    "vraag": "Wie is de president van Nederland?",
+    "emoji": "🇺🇸",
+    "opties": ["Joe Biden", "Jetten", "Barack Obama", "Kamala Harris"],
+    "correct": "B"
+  },
+  {
+    "vraag": "Wat is de hoofdstad van Spanje?",
+    "emoji": "🇫🇷",
+    "opties": ["Parijs", "Londen", "Berlijn", "Madrid"],
+    "correct": "D"
+  }
+]
