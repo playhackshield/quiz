@@ -2,7 +2,9 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8">
-  <title>Digibord - Quiz Server</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digibord - Quiz Master</title>
+  
   <!-- Firebase Compat SDK's -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -11,38 +13,279 @@
   <!-- App Scripts -->
   <script src="js/firebase-config.js"></script>
   <script src="js/quizdigibord.js" defer></script>
+
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --bg: #f3f4f6;
+      --card-bg: #ffffff;
+      --text: #1f2937;
+      --team-a: #2563eb;
+      --team-b: #dc2626;
+      --border-radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+    }
+
+    header {
+      background: var(--card-bg);
+      padding: 1.5rem 2rem;
+      border-radius: var(--border-radius);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .selector-group {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    select, button {
+      font-size: 1rem;
+      padding: 0.75rem 1.25rem;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    select {
+      background-color: #f9fafb;
+      cursor: pointer;
+    }
+
+    button {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(79, 70, 229, 0.2);
+    }
+
+    button:hover {
+      background-color: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    /* Scoreboard */
+    .scoreboard {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .score-card {
+      background: var(--card-bg);
+      padding: 1.25rem;
+      border-radius: var(--border-radius);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      text-align: center;
+      border-top: 6px solid #ccc;
+    }
+
+    .score-card.team-a { border-color: var(--team-a); }
+    .score-card.team-b { border-color: var(--team-b); }
+
+    .score-card h3 {
+      font-size: 1.2rem;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .score-card .score {
+      font-size: 3rem;
+      font-weight: 800;
+      margin-top: 0.25rem;
+    }
+
+    .score-card.team-a .score { color: var(--team-a); }
+    .score-card.team-b .score { color: var(--team-b); }
+
+    /* Quiz Box */
+    .quiz-card {
+      background: var(--card-bg);
+      padding: 2.5rem;
+      border-radius: var(--border-radius);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    .question-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .emoji-display {
+      font-size: 4rem;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    .question-text {
+      font-size: 1.8rem;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    /* Options Grid */
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      list-style: none;
+      margin-bottom: 2rem;
+    }
+
+    .option-item {
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      padding: 1.25rem;
+      border-radius: 12px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .option-badge {
+      background: var(--primary);
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    /* Status Bar */
+    .status-banner {
+      background: #e0e7ff;
+      color: #3730a3;
+      padding: 1rem 1.5rem;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 2rem;
+      border: 1px solid #c7d2fe;
+    }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .btn-nav {
+      background-color: #475569;
+      flex: 1;
+      padding: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .btn-nav:hover {
+      background-color: #334155;
+    }
+  </style>
 </head>
 <body>
-  <h1>Digibord Quiz Server</h1>
 
-  <label for="vragenlijst">Kies vragenlijst:</label>
-  <select id="vragenlijst">
-    <option value="vragen1.json">Vragenlijst 1</option>
-    <option value="vragen2.json">Vragenlijst 2</option>
-  </select>
-  <button onclick="startSessie()">Start Sessie</button>
+  <div class="container">
+    <header>
+      <h1>🎓 Quiz Master</h1>
+      <div class="selector-group">
+        <select id="vragenlijst">
+          <option value="vragen1.json">Vragenlijst 1</option>
+          <option value="vragen2.json">Vragenlijst 2</option>
+        </select>
+        <button onclick="startSessie()">Start Sessie</button>
+      </div>
+    </header>
 
-  <hr>
+    <div id="quiz-box" style="display:none;">
+      
+      <!-- Scoreboard -->
+      <div class="scoreboard">
+        <div class="score-card team-a">
+          <h3>Team A</h3>
+          <div class="score" id="score-A">0</div>
+        </div>
+        <div class="score-card team-b">
+          <h3>Team B</h3>
+          <div class="score" id="score-B">0</div>
+        </div>
+      </div>
 
-  <div id="quiz-box" style="display:none;">
-    <h2 id="emoji"></h2>
-    <h2 id="vraag-tekst"></h2>
-    
-    <ol type="A">
-      <li id="optie-A"></li>
-      <li id="optie-B"></li>
-      <li id="optie-C"></li>
-      <li id="optie-D"></li>
-    </ol>
+      <!-- Main Question Display -->
+      <div class="quiz-card">
+        <div class="question-header">
+          <span class="emoji-display" id="emoji">❓</span>
+          <h2 class="question-text" id="vraag-tekst">Laden van vraag...</h2>
+        </div>
 
-    <p><strong>Status:</strong> <span id="status-tekst">Aan het wachten...</span></p>
+        <ul class="options-grid">
+          <li class="option-item"><span class="option-badge">A</span><span id="optie-A">-</span></li>
+          <li class="option-item"><span class="option-badge">B</span><span id="optie-B">-</span></li>
+          <li class="option-item"><span class="option-badge">C</span><span id="optie-C">-</span></li>
+          <li class="option-item"><span class="option-badge">D</span><span id="optie-D">-</span></li>
+        </ul>
 
-    <button onclick="vorigeVraag()">Vorige Vraag</button>
-    <button onclick="volgendeVraag()">Volgende Vraag</button>
+        <div class="status-banner" id="status-tekst">
+          Wachten op antwoord...
+        </div>
 
-    <h3>Scoreboard</h3>
-    <p>Team A: <b id="score-A">0</b> punten</p>
-    <p>Team B: <b id="score-B">0</b> punten</p>
+        <div class="controls">
+          <button class="btn-nav" onclick="vorigeVraag()">⬅️ Vorige Vraag</button>
+          <button class="btn-nav" onclick="volgendeVraag()">Volgende Vraag ➡️</button>
+        </div>
+      </div>
+
+    </div>
   </div>
+
 </body>
 </html>
