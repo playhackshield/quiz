@@ -76,26 +76,58 @@
       document.getElementById('status-tekst').innerText = "Wachten op antwoord...";
     }
 
-    function stuurVraagNaarFirestore() {
-      toonVraag();
-      const v = vragen[huidigeIndex];
-      
-      sessionRef.set({
-        actieveVraagIndex: huidigeIndex,
-        vraagTekst: v.vraag,
-        opties: {
-          A: v.opties[0],
-          B: v.opties[1],
-          C: v.opties[2],
-          D: v.opties[3]
-        },
-        correctAntwoord: v.correct,
-        geantwoord: false,
-        scoreA: scoreA,
-        scoreB: scoreB
-      });
-    }
+function stuurVraagNaarFirestore() {
+  toonVraag();
+  const v = vragen[huidigeIndex];
+  
+  sessionRef.set({
+    actieveVraagIndex: huidigeIndex,
+    vraagTekst: v.vraag,
+    opties: {
+      A: v.opties[0],
+      B: v.opties[1],
+      C: v.opties[2],
+      D: v.opties[3]
+    },
+    correctAntwoord: v.correct,
+    teamAGefaald: false,
+    teamBGefaald: false,
+    vraagAfgerond: false,
+    winnaarTeam: null,
+    scoreA: scoreA,
+    scoreB: scoreB
+  });
+}
 
+function luisterNaarAntwoorden() {
+  sessionRef.onSnapshot((doc) => {
+    const data = doc.data();
+    if (!data) return;
+
+    // Update scores op scherm
+    document.getElementById('score-A').innerText = data.scoreA;
+    document.getElementById('score-B').innerText = data.scoreB;
+
+    const statusEl = document.getElementById('status-tekst');
+
+    if (data.vraagAfgerond) {
+      if (data.winnaarTeam) {
+        statusEl.innerText = `JUIST! Team ${data.winnaarTeam} heeft het goede antwoord gekozen! (+1 punt)`;
+      } else {
+        statusEl.innerText = "HELAAS! Beide teams hebben het verkeerde antwoord gekozen. Geen punten!";
+      }
+    } else {
+      if (data.teamAGefaald && !data.teamBGefaald) {
+        statusEl.innerText = "Team A koos een FOUT antwoord! Team A is uitgeschakeld. Team B is nu aan zet!";
+      } else if (data.teamBGefaald && !data.teamAGefaald) {
+        statusEl.innerText = "Team B koos een FOUT antwoord! Team B is uitgeschakeld. Team A is nu aan zet!";
+      } else {
+        statusEl.innerText = "Wachten op antwoord van Team A of Team B...";
+      }
+    }
+  });
+}
+    
     function volgendeVraag() {
       if (huidigeIndex < vragen.length - 1) {
         huidigeIndex++;
@@ -110,21 +142,7 @@
       }
     }
 
-    function luisterNaarAntwoorden() {
-      sessionRef.onSnapshot((doc) => {
-        const data = doc.data();
-        if (!data) return;
-
-        // Update scores op scherm
-        document.getElementById('score-A').innerText = data.scoreA;
-        document.getElementById('score-B').innerText = data.scoreB;
-
-        if (data.geantwoord) {
-          document.getElementById('status-tekst').innerText = 
-            `GEREND! Team ${data.geantwoordDoorTeam} drukte op ${data.gekozenAntwoord}. ` +
-            (data.isCorrect ? "JUIST! (+1 punt)" : "FOUT!");
-        }
-      });
+    );
     }
   </script>
 </body>
