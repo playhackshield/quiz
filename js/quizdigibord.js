@@ -1,6 +1,3 @@
-// Gebruik de bestaande db instance, of maak hem aan als hij nog niet bestaat
-var db = window.db || firebase.firestore();
-
 let huidigeVragen = [];
 let huidigeVraagIndex = 0;
 
