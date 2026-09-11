@@ -1,121 +1,111 @@
 // js/server.js
 const db = firebase.firestore();
 
-// Houd de huidige geladen vragen en index bij
 let huidigeVragen = [];
 let huidigeVraagIndex = 0;
 
-document.addEventListener("DOMContentLoaded", () => {
-  // 1. Vul de dropdown met vragenlijsten bij het laden van de pagina
-  laadVragenlijstenInDropdown();
+// Lijst van jouw bestanden in de map "vragenlijsten"
+const vragenLijsten = [
+  { bestand: "vragenlijsten/vragen0.json", naam: "Vragenlijst 0" },
+  { bestand: "vragenlijsten/vragen1.json", naam: "Vragenlijst 1" },
+  { bestand: "vragenlijsten/vragen2.json", naam: "Vragenlijst 2" },
+  { bestand: "vragenlijsten/vragen3.json", naam: "Vragenlijst 3" },
+  { bestand: "vragenlijsten/vragen4.json", naam: "Vragenlijst 4" },
+  { bestand: "vragenlijsten/vragen5.json", naam: "Vragenlijst 5" },
+  { bestand: "vragenlijsten/vragen6.json", naam: "Vragenlijst 6" },
+  { bestand: "vragenlijsten/vragen7.json", naam: "Vragenlijst 7" },
+  { bestand: "vragenlijsten/vragen8.json", naam: "Vragenlijst 8" },
+  { bestand: "vragenlijsten/vragen9.json", naam: "Vragenlijst 9" }
+];
 
-  // 2. Event Listeners voor de knoppen
-  document.getElementById("btn-laad-vragen").addEventListener("click", laadGeselecteerdeVragenlijst);
+document.addEventListener("DOMContentLoaded", () => {
+  // 1. Vul de dropdown direct met de bestanden uit de map "vragenlijsten"
+  vulDropdown();
+
+  // 2. Koppel de knoppen
+  document.getElementById("btn-laad-vragen").addEventListener("click", laadVragenlijst);
   document.getElementById("btn-volgende").addEventListener("click", volgendeVraag);
   document.getElementById("btn-vorige").addEventListener("click", vorigeVraag);
   document.getElementById("btn-reset-score").addEventListener("click", resetScores);
 
-  // 3. Luister live naar scores
+  // 3. Luister naar live scores uit Firestore
   luisterNaarScores();
 });
 
-// --- 1. VRAGENLIJSTEN IN DROPDOWN LADEN ---
-function laadVragenlijstenInDropdown() {
+// Vul de dropdown met de opties vragen0.json t/m vragen9.json
+function vulDropdown() {
   const dropdown = document.getElementById("vragenlijst-select");
   dropdown.innerHTML = '<option value="">-- Kies een vragenlijst --</option>';
 
-  // OPTIE A: Haal vragenlijsten op uit Firestore
-  db.collection("vragenlijsten").get().then((snapshot) => {
-    if (!snapshot.empty) {
-      snapshot.forEach((doc) => {
-        const option = document.createElement("option");
-        option.value = doc.id; // Document ID of JSON pad
-        option.textContent = doc.data().titel || doc.id;
-        dropdown.appendChild(option);
-      });
-    } else {
-      // OPTIE B: Fallback als je vaste JSON-bestanden gebruikt
-      laadStandaardJsonOpties(dropdown);
-    }
-  }).catch((error) => {
-    console.log("Firestore verzameling niet gevonden, we proberen JSON-bestanden:", error);
-    laadStandaardJsonOpties(dropdown);
-  });
-}
-
-// Fallback functie voor lokale JSON bestanden (bijv. in een map /vragen/)
-function laadStandaardJsonOpties(dropdown) {
-  const bekendeLijsten = [
-    { id: "vragen/algemeen.json", naam: "Algemene Kennis" },
-    { id: "vragen/rekentest.json", naam: "Rekenen" },
-    { id: "vragen/taal.json", naam: "Taal & Spelling" }
-  ];
-
-  bekendeLijsten.forEach(lijst => {
+  vragenLijsten.forEach((item) => {
     const option = document.createElement("option");
-    option.value = lijst.id;
-    option.textContent = lijst.naam;
+    option.value = item.bestand;
+    option.textContent = item.naam;
     dropdown.appendChild(option);
   });
 }
 
-// --- 2. GESELECTEERDE VRAGENLIJST INLADEN ---
-function laadGeselecteerdeVragenlijst() {
+// Lees het geselecteerde JSON bestand in uit de map "vragenlijsten"
+function laadVragenlijst() {
   const dropdown = document.getElementById("vragenlijst-select");
-  const geselecteerdeId = dropdown.value;
+  const gekozenBestand = dropdown.value;
 
-  if (!geselecteerdeId) {
-    alert("Selecteer eerst een vragenlijst uit de lijst!");
+  if (!gekozenBestand) {
+    alert("Selecteer eerst een vragenlijst!");
     return;
   }
 
-  // Als het een JSON-bestand is
-  if (geselecteerdeId.endsWith(".json")) {
-    fetch(geselecteerdeId)
-      .then(res => res.json())
-      .then(data => {
-        huidigeVragen = data.vragen || data;
-        huidigeVraagIndex = 0;
-        toonVraag(huidigeVraagIndex);
-      })
-      .catch(err => alert("Fout bij laden van JSON bestand: " + err));
-  } else {
-    // Als het uit Firestore komt
-    db.collection("vragenlijsten").doc(geselecteerdeId).get().then((doc) => {
-      if (doc.exists) {
-        huidigeVragen = doc.data().vragen || [];
-        huidigeVraagIndex = 0;
-        toonVraag(huidigeVraagIndex);
+  fetch(gekozenBestand)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Kon bestand niet vinden: " + gekozenBestand);
       }
+      return response.json();
+    })
+    .then((data) => {
+      // Zowel array [...] als object { vragen: [...] } ondersteunen
+      huidigeVragen = Array.isArray(data) ? data : (data.vragen || []);
+      
+      if (huidigeVragen.length === 0) {
+        alert("Geen vragen gevonden in dit bestand.");
+        return;
+      }
+
+      huidigeVraagIndex = 0;
+      toonVraag(huidigeVraagIndex);
+    })
+    .catch((error) => {
+      console.error("Fout bij laden JSON:", error);
+      alert("Kan " + gekozenBestand + " niet laden. Controleer of het bestand in de map 'vragenlijsten' staat.");
     });
-  }
 }
 
-// --- 3. VRAAG TONEN & SYNCHRONISEREN NAAR FIRESTORE ---
+// Toon de huidige vraag op het Digibord & stuur naar Firestore voor de Chromebooks
 function toonVraag(index) {
   if (!huidigeVragen || huidigeVragen.length === 0) return;
 
-  const vraagData = huidigeVragen[index];
+  const v = huidigeVragen[index];
 
-  // Update de Digibord HTML
+  // Update de teksten op server.html
   document.getElementById("vraag-nummer-label").innerText = `Vraag ${index + 1} van ${huidigeVragen.length}`;
-  document.getElementById("vraag-tekst").innerText = vraagData.vraag;
-  
-  document.getElementById("tekst-a").innerText = vraagData.opties?.A || vraagData.antwoordA || "-";
-  document.getElementById("tekst-b").innerText = vraagData.opties?.B || vraagData.antwoordB || "-";
-  document.getElementById("tekst-c").innerText = vraagData.opties?.C || vraagData.antwoordC || "-";
-  document.getElementById("tekst-d").innerText = vraagData.opties?.D || vraagData.antwoordD || "-";
+  document.getElementById("vraag-tekst").innerText = v.vraag || v.question || "";
 
-  // Synchroniseer naar Firestore actieveVraag zodat Chromebooks het direct zien
+  // Ondersteun verschillende JSON formats (opties.A of antwoordA of opties[0])
+  const optieA = v.opties?.A || v.antwoordA || (v.opties ? v.opties[0] : "-");
+  const optieB = v.opties?.B || v.antwoordB || (v.opties ? v.opties[1] : "-");
+  const optieC = v.opties?.C || v.antwoordC || (v.opties ? v.opties[2] : "-");
+  const optieD = v.opties?.D || v.antwoordD || (v.opties ? v.opties[3] : "-");
+
+  document.getElementById("tekst-a").innerText = optieA;
+  document.getElementById("tekst-b").innerText = optieB;
+  document.getElementById("tekst-c").innerText = optieC;
+  document.getElementById("tekst-d").innerText = optieD;
+
+  // Stuur de actieve vraag naar Firestore zodat de Chromebooks weten dat er een vraag openstaat
   db.collection("quiz").doc("actieveVraag").set({
-    vraag: vraagData.vraag,
-    opties: {
-      A: vraagData.opties?.A || vraagData.antwoordA || "",
-      B: vraagData.opties?.B || vraagData.antwoordB || "",
-      C: vraagData.opties?.C || vraagData.antwoordC || "",
-      D: vraagData.opties?.D || vraagData.antwoordD || ""
-    },
-    juisteAntwoord: vraagData.juisteAntwoord || vraagData.correct || "",
+    vraag: v.vraag || v.question || "",
+    opties: { A: optieA, B: optieB, C: optieC, D: optieD },
+    juisteAntwoord: v.juisteAntwoord || v.correct || "",
     index: index
   });
 }
@@ -134,9 +124,8 @@ function vorigeVraag() {
   }
 }
 
-// --- 4. SCORES RESETTEN & LUISTEREN ---
 function resetScores() {
-  if (confirm("Weet je zeker dat je de scores van beide teams wilt resetten naar 0?")) {
+  if (confirm("Scores resetten naar 0 voor Team A en Team B?")) {
     db.collection("quiz").doc("scores").set({
       teamA: 0,
       teamB: 0
