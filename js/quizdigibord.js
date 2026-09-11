@@ -1,4 +1,4 @@
-const sessionRef = db.collection("sessions").doc("klas1");
+const sessionRef = db.collection("quiz_sessies").doc("vragensessie1");
 let vragen = [];
 let huidigeIndex = 0;
 let scoreA = 0;
