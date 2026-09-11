@@ -1,4 +1,4 @@
-const sessionRef = db.collection("quiz_sessies").doc("klas1");
+const sessionRef = db.collection("quiz_sessies").doc("vragensessie1");
 
 function koppelChromebook(mijnLetter) {
   document.getElementById('knop-A').onclick = () => verwerkDruk(mijnLetter, 'A');
