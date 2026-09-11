@@ -11,15 +11,17 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   
   <script src="js/firebase-config.js"></script>
-  <script src="js/quizchromebook.js"></script>
+  <script src="js/chromebook.js"></script>
 
   <style>
-    :root {
-      --team-a-bg: #2563eb;
-      --team-a-hover: #1d4ed8;
-      --team-b-bg: #dc2626;
-      --team-b-hover: #b91c1c;
-    }
+    /* Antwoord Kleuren (matchen met het Digibord) */
+    .kleur-A { background-color: #ef4444; color: white; }     /* Rood */
+    .kleur-B { background-color: #22c55e; color: white; }     /* Groen */
+    .kleur-C { background-color: #3b82f6; color: white; }     /* Blauw */
+    .kleur-D { background-color: #facc15; color: #0f172a; }   /* Geel (met donkere tekst) */
+
+    /* Basis styling voor de pagina (als fallback of tijdens laden) */
+    .kleur-fallback { background-color: #1e293b; color: white; } 
 
     * {
       box-sizing: border-box;
@@ -30,7 +32,6 @@
 
     body {
       background-color: #0f172a;
-      color: white;
       height: 100vh;
       display: flex;
       flex-direction: column;
@@ -38,33 +39,41 @@
     }
 
     header {
-      background: #1e293b;
-      padding: 1.25rem 2rem;
+      padding: 2rem;
       text-align: center;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
       z-index: 10;
+      transition: background-color 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 35vh; /* Maakt de kleur lekker groot op het scherm */
     }
 
     .badge {
       display: inline-block;
-      background: #38bdf8;
-      color: #0f172a;
+      background: rgba(0, 0, 0, 0.2);
       font-weight: 800;
-      padding: 0.25rem 0.75rem;
-      border-radius: 20px;
-      font-size: 0.9rem;
+      padding: 0.5rem 1.5rem;
+      border-radius: 30px;
+      font-size: 1.2rem;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 0.5rem;
+      letter-spacing: 2px;
+      margin-bottom: 1rem;
+    }
+
+    /* Zorgt dat de badge op de gele pagina ook een donkere rand/achtergrond krijgt */
+    .kleur-D .badge {
+      background: rgba(0, 0, 0, 0.1);
     }
 
     .answer-display {
-      font-size: 2rem;
-      font-weight: 700;
-      color: #f8fafc;
+      font-size: 2.5rem;
+      font-weight: 800;
     }
 
-    /* Massive Touch Zones */
+    /* Neutrale team knoppen */
     .button-container {
       flex: 1;
       display: grid;
@@ -86,46 +95,48 @@
       justify-content: center;
       gap: 0.5rem;
       transition: all 0.15s ease;
-      box-shadow: inset 0 -8px 0 rgba(0,0,0,0.25);
+      box-shadow: inset 0 -8px 0 rgba(0,0,0,0.4);
     }
 
+    /* Team A = Antraciet, Team B = Iets donkerder antraciet, zodat de focus op de header ligt */
     .btn-team-a {
-      background-color: var(--team-a-bg);
+      background-color: #334155; 
     }
     .btn-team-a:hover:not(:disabled) {
-      background-color: var(--team-a-hover);
+      background-color: #475569;
     }
 
     .btn-team-b {
-      background-color: var(--team-b-bg);
+      background-color: #1e293b;
     }
     .btn-team-b:hover:not(:disabled) {
-      background-color: var(--team-b-hover);
+      background-color: #334155;
     }
 
     .btn-team:active:not(:disabled) {
       transform: translateY(4px);
-      box-shadow: inset 0 -2px 0 rgba(0,0,0,0.25);
+      box-shadow: inset 0 -2px 0 rgba(0,0,0,0.4);
     }
 
     .btn-team:disabled {
-      background-color: #334155 !important;
-      color: #64748b !important;
+      background-color: #0f172a !important;
+      color: #475569 !important;
       cursor: not-allowed;
       box-shadow: none;
-      opacity: 0.6;
+      opacity: 0.5;
     }
 
     .sub-text {
-      font-size: 1rem;
+      font-size: 1.2rem;
       font-weight: 500;
-      opacity: 0.8;
+      opacity: 0.7;
     }
   </style>
 </head>
 <body>
 
-  <header>
+  <!-- De header krijgt dynamisch de class .kleur-A, .kleur-B etc. -->
+  <header id="main-header" class="kleur-fallback">
     <div class="badge" id="optie-badge">Optie -</div>
     <div class="answer-display" id="antwoord-tekst">Aan het laden...</div>
   </header>
@@ -142,21 +153,30 @@
   </div>
 
   <script>
-    // Lees de URL parameter uit (bijv. ?antwoord=A of ?antwoord=a)
     const urlParams = new URLSearchParams(window.location.search);
     const antwoordParam = urlParams.get('antwoord');
 
     if (antwoordParam) {
-      const letter = antwoordParam.toUpperCase(); // Maak er een hoofdletter van (A, B, C of D)
+      const letter = antwoordParam.toUpperCase(); 
       
-      // Update de titel en badge op het scherm
+      // Update de teksten
       document.title = "Chromebook - Antwoord " + letter;
-      document.getElementById('optie-badge').innerText = "Optie " + letter;
+      document.getElementById('optie-badge').innerText = "Antwoord " + letter;
       
-      // Koppel de logica uit chromebook.js met de gekozen letter
+      // Update de KLEUR van de header
+      const header = document.getElementById('main-header');
+      header.classList.remove('kleur-fallback'); // Verwijder de standaardkleur
+      
+      if (['A', 'B', 'C', 'D'].includes(letter)) {
+        header.classList.add('kleur-' + letter); // Voeg .kleur-A, -B, -C of -D toe
+      } else {
+        header.classList.add('kleur-fallback'); // Fallback als iemand ?antwoord=Z intypt
+      }
+      
+      // Start logica
       koppelChromebook(letter);
     } else {
-      document.getElementById('antwoord-tekst').innerText = "Fout: Geen URL parameter meegegeven! Gebruik ?antwoord=A";
+      document.getElementById('antwoord-tekst').innerText = "Fout: Gebruik ?antwoord=A in de adresbalk";
     }
   </script>
 </body>
