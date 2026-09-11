@@ -1,6 +1,5 @@
 const sessionRef = db.collection("sessions").doc("klas1");
 
-// Deze functie wordt aangeroepen door antwoordA.html t/m antwoordD.html
 function koppelChromebook(mijnLetter) {
   document.getElementById('knop-A').onclick = () => verwerkDruk(mijnLetter, 'A');
   document.getElementById('knop-B').onclick = () => verwerkDruk(mijnLetter, 'B');
@@ -14,22 +13,16 @@ function koppelChromebook(mijnLetter) {
     const antwoordTekst = data.opties ? data.opties[mijnLetter] : "...";
     document.getElementById('antwoord-tekst').innerText = antwoordTekst;
 
-    // 2. Blokkeer de knoppen als de vraag al geantwoord is
     const knopA = document.getElementById('knop-A');
     const knopB = document.getElementById('knop-B');
-    
-    if (data.geantwoord) {
-      knopA.disabled = true;
-      knopB.disabled = true;
-    } else {
-      knopA.disabled = false;
-      knopB.disabled = false;
-    }
+
+    // 2. Blokkeer de knoppen als de vraag is afgerond óf als het betreffende team is gefaald
+    knopA.disabled = data.vraagAfgerond || data.teamAGefaald;
+    knopB.disabled = data.vraagAfgerond || data.teamBGefaald;
   });
 }
 
 async function verwerkDruk(letter, team) {
-  // Transactie zorgt ervoor dat alleen de ALLEREERSTE druk geldt (race-conditie bescherming)
   try {
     await db.runTransaction(async (transaction) => {
       const sfDoc = await transaction.get(sessionRef);
@@ -37,26 +30,43 @@ async function verwerkDruk(letter, team) {
 
       const data = sfDoc.data();
       
-      // Als er al iemand heeft gedrukt, negeer deze druk
-      if (data.geantwoord) return;
+      // Negeer als de vraag al is afgerond of als dit team al is gefaald
+      if (data.vraagAfgerond) return;
+      if (team === 'A' && data.teamAGefaald) return;
+      if (team === 'B' && data.teamBGefaald) return;
 
       const isCorrect = (letter === data.correctAntwoord);
-      let nieuwScoreA = data.scoreA || 0;
-      let nieuwScoreB = data.scoreB || 0;
 
       if (isCorrect) {
+        // GOED ANTWOORD: Vraag is direct klaar en team krijgt een punt
+        let nieuwScoreA = data.scoreA || 0;
+        let nieuwScoreB = data.scoreB || 0;
+
         if (team === 'A') nieuwScoreA++;
         if (team === 'B') nieuwScoreB++;
-      }
 
-      transaction.update(sessionRef, {
-        geantwoord: true,
-        gekozenAntwoord: letter,
-        geantwoordDoorTeam: team,
-        isCorrect: isCorrect,
-        scoreA: nieuwScoreA,
-        scoreB: nieuwScoreB
-      });
+        transaction.update(sessionRef, {
+          vraagAfgerond: true,
+          winnaarTeam: team,
+          scoreA: nieuwScoreA,
+          scoreB: nieuwScoreB
+        });
+
+      } else {
+        // FOUT ANTWOORD: Zet gefaald-status voor dit team
+        const updateData = {};
+        if (team === 'A') updateData.teamAGefaald = true;
+        if (team === 'B') updateData.teamBGefaald = true;
+
+        // Check of door deze fout nu BEIDE teams gefaald zijn
+        const beideGefaald = (team === 'A' && data.teamBGefaald) || (team === 'B' && data.teamAGefaald);
+
+        if (beideGefaald) {
+          updateData.vraagAfgerond = true; // Niemand krijgt een punt
+        }
+
+        transaction.update(sessionRef, updateData);
+      }
     });
   } catch (e) {
     console.error("Transactie mislukt: ", e);
