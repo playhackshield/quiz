@@ -1,0 +1,14 @@
+[
+  {
+    "vraag": "Wie is de president van Amerika?",
+    "emoji": "🇺🇸",
+    "opties": ["Joe Biden", "Donald Trump", "Barack Obama", "Kamala Harris"],
+    "correct": "B"
+  },
+  {
+    "vraag": "Wat is de hoofdstad van Frankrijk?",
+    "emoji": "🇫🇷",
+    "opties": ["Parijs", "Londen", "Berlijn", "Madrid"],
+    "correct": "A"
+  }
+]
