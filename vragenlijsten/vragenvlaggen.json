@@ -1,0 +1,92 @@
+[
+  {
+    "vraag": "Van welk land is deze vlag?",
+    "emoji": "🇹🇷",
+    "opties": ["Turkije", "Tunesië", "Algerije", "Pakistan"],
+    "correct": "A"
+  },
+  {
+    "vraag": "Van welk land is deze vlag?",
+    "emoji": "🇳🇱",
+    "opties": ["Luxemburg", "Nederland", "Frankrijk", "België"],
+    "correct": "B"
+  },
+  {
+    "vraag": "Van welk land is deze vlag?",
+    "emoji": "🇺🇸",
+    "opties": ["Verenigde Staten", "Verenigd Koninkrijk", "Australië", "Liberia"],
+    "correct": "A"
+  },
+  {
+    "vraag": "Van welk land is deze vlag?",
+    "emoji": "🇨🇳",
+    "opties": ["Japan", "China", "Noord-Korea", "Vietnam"],
+    "correct": "B"
+  },
+  {
+    "vraag": "Van welk land is deze vlag?",
+    "emoji": "🇯🇵",
+    "opties": ["Japan", "Zuid-Korea", "Bangladesh", "Tunesië"],
+    "correct": "A"
+  },
+  {
+    "vraag": "Van welk land is deze vlag?",
+    "emoji": "🇲🇦",
+    "opties": ["China", "Vietnam", "Marokko", "Suriname"],
+    "correct": "C"
+  },
+  {
+    "vraag": "Van welk land is deze vlag?",
+    "emoji": "🇸🇷",
+    "opties": ["Suriname", "Guyana", "Trinidad en Tobago", "Barbados"],
+    "correct": "A"
+  },
+  {
+    "vraag": "Van welk land is deze vlag?",
+    "emoji": "🇪🇸",
+    "opties": ["Portugal", "Spanje", "Italië", "Mexico"],
+    "correct": "B"
+  },
+  {
+    "vraag": "Van welk land is deze vlag?",
+    "emoji": "🇮🇩",
+    "opties": ["Monaco", "Indonesië", "Polen", "Singapore"],
+    "correct": "B"
+  },
+  {
+    "vraag": "Van welk land is deze vlag?",
+    "emoji": "🇧🇮",
+    "opties": ["Burundi", "Kenia", "Oeganda", "Rwanda"],
+    "correct": "A"
+  },
+  {
+    "vraag": "Van welk land is deze vlag?",
+    "emoji": "🇵🇰",
+    "opties": ["Pakistan", "Saoedi-Arabië", "Algerije", "Turkije"],
+    "correct": "A"
+  },
+  {
+    "vraag": "Van welk land is deze vlag?",
+    "emoji": "🇸🇾",
+    "opties": ["Syrië", "Irak", "Jemen", "Egypte"],
+    "correct": "A"
+  },
+  {
+    "vraag": "Van welk land is deze vlag?",
+    "emoji": "🇹🇭",
+    "opties": ["Cambodja", "Thailand", "Laos", "Myanmar"],
+    "correct": "B"
+  },
+  {
+    "vraag": "Van welk land is deze vlag?",
+    "emoji": "🇰🇭",
+    "opties": ["Thailand", "Vietnam", "Cambodja", "Laos"],
+    "correct": "C"
+  },
+  {
+    "vraag": "Van welk land is deze vlag?",
+    "emoji": "🇪🇷",
+    "opties": ["Eritrea", "Ethiopië", "Djibouti", "Somalië"],
+    "correct": "A"
+  }
+]
