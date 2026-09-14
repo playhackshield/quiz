@@ -193,21 +193,26 @@
             background: #dce8f4;
             padding: 4px 18px;
             border-radius: 30px;
-            display: none; /* standaard verborgen; alleen tonen als er een leerling is */
         }
-        .quiz-header .leerling-naam.visible {
-            display: inline-block;
+        .quiz-header .leerling-naam:empty {
+            display: none;
         }
 
-        /* ===== EMOJI / VLAG WEERGAVE ===== */
-        .emoji-display {
-            text-align: center;
-            font-size: 8rem;
-            line-height: 1.1;
-            margin: 10px 0 20px 0;
-            letter-spacing: 10px;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.08));
-            user-select: none;
+        /* ===== AFBEELDING (vlag) ===== */
+        .vraag-afbeelding {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .vraag-afbeelding img {
+            max-width: 320px;
+            max-height: 200px;
+            width: auto;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+            border: 2px solid #e0e8f0;
         }
 
         /* ===== VRAAG ===== */
@@ -218,6 +223,7 @@
             margin-bottom: 28px;
             line-height: 1.4;
             padding: 8px 4px;
+            text-align: center;
         }
         .vraag-tekst .vraag-nummer {
             color: #6a8aaa;
@@ -410,8 +416,9 @@
             .vraag-tekst {
                 font-size: 1.2rem;
             }
-            .emoji-display {
-                font-size: 5rem;
+            .vraag-afbeelding img {
+                max-width: 220px;
+                max-height: 140px;
             }
             .antwoord-optie {
                 padding: 14px 16px;
@@ -436,7 +443,6 @@
         @media (max-width: 480px) {
             .json-section { padding: 14px 16px; }
             .antwoorden-grid { gap: 10px; }
-            .emoji-display { font-size: 4rem; }
         }
     </style>
 </head>
@@ -448,12 +454,12 @@
             <button class="json-close-btn" id="jsonCloseBtn" title="Verberg dit blok">✕</button>
             <label for="jsonInput">📋 Plak hier je JSON met quizvragen:</label>
             <textarea id="jsonInput" placeholder='[
-    {
-        "vraag": "Van welk land is deze vlag?",
-        "emoji": "🇹🇷",
-        "opties": ["Turkije", "Tunesië", "Algerije", "Pakistan"],
-        "correct": "A"
-    }
+  {
+    "vraag": "Van welk land is deze vlag?",
+    "afbeelding": "https://flagcdn.com/w320/tr.png",
+    "opties": ["Turkije", "Tunesië", "Algerije", "Pakistan"],
+    "correct": "A"
+  }
 ]'></textarea>
             <div class="json-actions">
                 <button class="generate-btn" id="generateBtn">🚀 Genereer quiz</button>
@@ -480,11 +486,13 @@
         <!-- Quiz header -->
         <div class="quiz-header">
             <span class="vraag-teller" id="vraagTeller">Vraag 1 / 10</span>
-            <span class="leerling-naam" id="leerlingNaam">👤 Pietje</span>
+            <span class="leerling-naam" id="leerlingNaam"></span>
         </div>
 
-        <!-- Emoji / vlag weergave -->
-        <div class="emoji-display" id="emojiDisplay">🇹🇷</div>
+        <!-- Afbeelding (optioneel) -->
+        <div class="vraag-afbeelding" id="vraagAfbeelding" style="display:none;">
+            <img id="vraagAfbeeldingImg" src="" alt="Vraag afbeelding" />
+        </div>
 
         <!-- Vraag -->
         <div class="vraag-tekst" id="vraagTekst">
@@ -494,16 +502,16 @@
         <!-- Antwoorden -->
         <div class="antwoorden-grid" id="antwoordenGrid">
             <div class="antwoord-optie kleur-a" data-index="0">
-                <span class="letter">A</span> Turkije
+                <span class="letter">A</span> Optie A
             </div>
             <div class="antwoord-optie kleur-b" data-index="1">
-                <span class="letter">B</span> Tunesië
+                <span class="letter">B</span> Optie B
             </div>
             <div class="antwoord-optie kleur-c" data-index="2">
-                <span class="letter">C</span> Algerije
+                <span class="letter">C</span> Optie C
             </div>
             <div class="antwoord-optie kleur-d" data-index="3">
-                <span class="letter">D</span> Pakistan
+                <span class="letter">D</span> Optie D
             </div>
         </div>
 
@@ -525,22 +533,97 @@
         // 1. STANDAARD VRAGEN (vlaggenquiz)
         // ================================================================
         const STANDAARD_VRAGEN = [
-          { "vraag": "Van welk land is deze vlag?", "emoji": "🇹🇷", "opties": ["Turkije", "Tunesië", "Algerije", "Pakistan"], "correct": "A" },
-          { "vraag": "Van welk land is deze vlag?", "emoji": "🇳🇱", "opties": ["Luxemburg", "Nederland", "Frankrijk", "België"], "correct": "B" },
-          { "vraag": "Van welk land is deze vlag?", "emoji": "🇺🇸", "opties": ["Verenigde Staten", "Verenigd Koninkrijk", "Australië", "Liberia"], "correct": "A" },
-          { "vraag": "Van welk land is deze vlag?", "emoji": "🇨🇳", "opties": ["Japan", "China", "Noord-Korea", "Vietnam"], "correct": "B" },
-          { "vraag": "Van welk land is deze vlag?", "emoji": "🇯🇵", "opties": ["Japan", "Zuid-Korea", "Bangladesh", "Tunesië"], "correct": "A" },
-          { "vraag": "Van welk land is deze vlag?", "emoji": "🇲🇦", "opties": ["China", "Vietnam", "Marokko", "Suriname"], "correct": "C" },
-          { "vraag": "Van welk land is deze vlag?", "emoji": "🇸🇷", "opties": ["Suriname", "Guyana", "Trinidad en Tobago", "Barbados"], "correct": "A" },
-          { "vraag": "Van welk land is deze vlag?", "emoji": "🇪🇸", "opties": ["Portugal", "Spanje", "Italië", "Mexico"], "correct": "B" },
-          { "vraag": "Van welk land is deze vlag?", "emoji": "🇮🇩", "opties": ["Monaco", "Indonesië", "Polen", "Singapore"], "correct": "B" },
-          { "vraag": "Van welk land is deze vlag?", "emoji": "🇧🇮", "opties": ["Burundi", "Kenia", "Oeganda", "Rwanda"], "correct": "A" },
-          { "vraag": "Van welk land is deze vlag?", "emoji": "🇵🇰", "opties": ["Pakistan", "Saoedi-Arabië", "Algerije", "Turkije"], "correct": "A" },
-          { "vraag": "Van welk land is deze vlag?", "emoji": "🇸🇾", "opties": ["Syrië", "Irak", "Jemen", "Egypte"], "correct": "A" },
-          { "vraag": "Van welk land is deze vlag?", "emoji": "🇹🇭", "opties": ["Cambodja", "Thailand", "Laos", "Myanmar"], "correct": "B" },
-          { "vraag": "Van welk land is deze vlag?", "emoji": "🇰🇭", "opties": ["Thailand", "Vietnam", "Cambodja", "Laos"], "correct": "C" },
-          { "vraag": "Van welk land is deze vlag?", "emoji": "🇪🇷", "opties": ["Eritrea", "Ethiopië", "Djibouti", "Somalië"], "correct": "A" }
-        ];
+  {
+    "vraag": "Van welk land is deze vlag?",
+    "afbeelding": "https://flagcdn.com/w320/tr.png",
+    "opties": ["Turkije", "Tunesië", "Algerije", "Pakistan"],
+    "correct": "A"
+  },
+  {
+    "vraag": "Van welk land is deze vlag?",
+    "afbeelding": "https://flagcdn.com/w320/nl.png",
+    "opties": ["Luxemburg", "Nederland", "Frankrijk", "België"],
+    "correct": "B"
+  },
+  {
+    "vraag": "Van welk land is deze vlag?",
+    "afbeelding": "https://flagcdn.com/w320/us.png",
+    "opties": ["Verenigde Staten", "Verenigd Koninkrijk", "Australië", "Liberia"],
+    "correct": "A"
+  },
+  {
+    "vraag": "Van welk land is deze vlag?",
+    "afbeelding": "https://flagcdn.com/w320/cn.png",
+    "opties": ["Japan", "China", "Noord-Korea", "Vietnam"],
+    "correct": "B"
+  },
+  {
+    "vraag": "Van welk land is deze vlag?",
+    "afbeelding": "https://flagcdn.com/w320/jp.png",
+    "opties": ["Japan", "Zuid-Korea", "Bangladesh", "Tunesië"],
+    "correct": "A"
+  },
+  {
+    "vraag": "Van welk land is deze vlag?",
+    "afbeelding": "https://flagcdn.com/w320/ma.png",
+    "opties": ["China", "Vietnam", "Marokko", "Suriname"],
+    "correct": "C"
+  },
+  {
+    "vraag": "Van welk land is deze vlag?",
+    "afbeelding": "https://flagcdn.com/w320/sr.png",
+    "opties": ["Suriname", "Guyana", "Trinidad en Tobago", "Barbados"],
+    "correct": "A"
+  },
+  {
+    "vraag": "Van welk land is deze vlag?",
+    "afbeelding": "https://flagcdn.com/w320/es.png",
+    "opties": ["Portugal", "Spanje", "Italië", "Mexico"],
+    "correct": "B"
+  },
+  {
+    "vraag": "Van welk land is deze vlag?",
+    "afbeelding": "https://flagcdn.com/w320/id.png",
+    "opties": ["Monaco", "Indonesië", "Polen", "Singapore"],
+    "correct": "B"
+  },
+  {
+    "vraag": "Van welk land is deze vlag?",
+    "afbeelding": "https://flagcdn.com/w320/bi.png",
+    "opties": ["Burundi", "Kenia", "Oeganda", "Rwanda"],
+    "correct": "A"
+  },
+  {
+    "vraag": "Van welk land is deze vlag?",
+    "afbeelding": "https://flagcdn.com/w320/pk.png",
+    "opties": ["Pakistan", "Saoedi-Arabië", "Algerije", "Turkije"],
+    "correct": "A"
+  },
+  {
+    "vraag": "Van welk land is deze vlag?",
+    "afbeelding": "https://flagcdn.com/w320/sy.png",
+    "opties": ["Syrië", "Irak", "Jemen", "Egypte"],
+    "correct": "A"
+  },
+  {
+    "vraag": "Van welk land is deze vlag?",
+    "afbeelding": "https://flagcdn.com/w320/th.png",
+    "opties": ["Cambodja", "Thailand", "Laos", "Myanmar"],
+    "correct": "B"
+  },
+  {
+    "vraag": "Van welk land is deze vlag?",
+    "afbeelding": "https://flagcdn.com/w320/kh.png",
+    "opties": ["Thailand", "Vietnam", "Cambodja", "Laos"],
+    "correct": "C"
+  },
+  {
+    "vraag": "Van welk land is deze vlag?",
+    "afbeelding": "https://flagcdn.com/w320/er.png",
+    "opties": ["Eritrea", "Ethiopië", "Djibouti", "Somalië"],
+    "correct": "A"
+  }
+];
 
         // ================================================================
         // 2. STATE
@@ -564,7 +647,8 @@
         const quizContainer = document.getElementById('quizContainer');
         const vraagTeller = document.getElementById('vraagTeller');
         const leerlingNaam = document.getElementById('leerlingNaam');
-        const emojiDisplay = document.getElementById('emojiDisplay');
+        const vraagAfbeelding = document.getElementById('vraagAfbeelding');
+        const vraagAfbeeldingImg = document.getElementById('vraagAfbeeldingImg');
         const vraagTekst = document.getElementById('vraagTekst');
         const antwoordenGrid = document.getElementById('antwoordenGrid');
         const prevBtn = document.getElementById('prevBtn');
@@ -579,16 +663,20 @@
         const LETTERS = ['A', 'B', 'C', 'D'];
 
         // ================================================================
-        // 5. HELPER: correct-waarde naar index
+        // 5. HELPER: correct-waarde omzetten naar index
         // ================================================================
         function correctNaarIndex(correct) {
-            if (typeof correct === 'number') return correct; // oud format
+            // Als het een getal is, gebruik het direct
+            if (typeof correct === 'number') {
+                return correct;
+            }
+            // Als het een letter is ("A", "B", "C", "D"), zet om naar index
             if (typeof correct === 'string') {
-                const upper = correct.trim().toUpperCase();
-                const idx = LETTERS.indexOf(upper);
+                const idx = LETTERS.indexOf(correct.toUpperCase());
                 if (idx !== -1) return idx;
-                const num = parseInt(upper, 10);
-                if (!isNaN(num) && num >= 0 && num < 4) return num;
+                // Misschien is het een getal als string?
+                const num = parseInt(correct, 10);
+                if (!isNaN(num)) return num;
             }
             return 0; // fallback
         }
@@ -625,18 +713,17 @@
             // Leerlingnaam (optioneel)
             if (vraag.leerling) {
                 leerlingNaam.textContent = `👤 ${vraag.leerling}`;
-                leerlingNaam.classList.add('visible');
             } else {
-                leerlingNaam.classList.remove('visible');
+                leerlingNaam.textContent = '';
             }
 
-            // Emoji / vlag weergave
-            if (vraag.emoji) {
-                emojiDisplay.textContent = vraag.emoji;
-                emojiDisplay.style.display = 'block';
+            // Afbeelding (optioneel)
+            if (vraag.afbeelding) {
+                vraagAfbeeldingImg.src = vraag.afbeelding;
+                vraagAfbeelding.style.display = 'flex';
             } else {
-                emojiDisplay.textContent = '';
-                emojiDisplay.style.display = 'none';
+                vraagAfbeeldingImg.src = '';
+                vraagAfbeelding.style.display = 'none';
             }
 
             // Vraagtekst
@@ -652,15 +739,18 @@
                 const kleur = KLEUREN[i] || 'kleur-a';
                 const tekst = opties[i] || `Optie ${letter}`;
 
+                // Reset classes
                 el.className = `antwoord-optie ${kleur}`;
                 el.dataset.index = i;
                 el.innerHTML = `<span class="letter">${letter}</span> ${tekst}`;
 
+                // Verwijder event listeners (voorkomt dubbel)
                 el.replaceWith(el.cloneNode(true));
             });
 
+            // Haal de nieuwe elementen op en voeg click listeners toe
             const nieuweOpties = antwoordenGrid.querySelectorAll('.antwoord-optie');
-            nieuweOpties.forEach((el) => {
+            nieuweOpties.forEach((el, i) => {
                 el.addEventListener('click', () => {
                     if (antwoordGetoond) return;
                     if (el.classList.contains('disabled')) return;
@@ -668,11 +758,17 @@
                 });
             });
 
+            // Reset antwoord getoond status
             antwoordGetoond = false;
+
+            // Navigatie knoppen
             prevBtn.disabled = index === 0;
             nextBtn.disabled = index === quizVragen.length - 1;
+
+            // Toon antwoord knop inschakelen
             toonAntwoordBtn.disabled = false;
 
+            // Verwijder alle markeringen (correct/fout) van de antwoorden
             nieuweOpties.forEach(el => {
                 el.classList.remove('correct', 'fout', 'disabled');
             });
@@ -684,6 +780,8 @@
             if (!vraag) return;
 
             const correctIndex = correctNaarIndex(vraag.correct);
+            if (correctIndex === undefined || correctIndex === null) return;
+
             antwoordGetoond = true;
 
             const opties = antwoordenGrid.querySelectorAll('.antwoord-optie');
@@ -736,7 +834,7 @@
                 if (!Array.isArray(data)) {
                     throw new Error('JSON moet een array zijn.');
                 }
-
+                // Valideer structuur (leerling is optioneel, afbeelding is optioneel)
                 const isValid = data.every(item =>
                     item.vraag !== undefined &&
                     Array.isArray(item.opties) &&
@@ -745,7 +843,7 @@
                 );
 
                 if (!isValid) {
-                    throw new Error('Ongeldige structuur. Elk item moet minimaal "vraag", "opties" (4 items) en "correct" bevatten.');
+                    throw new Error('Ongeldige structuur. Zorg dat elk item "vraag", "opties" (4 items) en "correct" bevat.');
                 }
 
                 laadQuiz(data);
@@ -785,11 +883,13 @@
 
         resetBtn.addEventListener('click', resetQuiz);
 
+        // JSON-blok verbergen
         jsonCloseBtn.addEventListener('click', () => {
             jsonWrapper.style.display = 'none';
             showJsonBtn.classList.add('visible');
         });
 
+        // JSON-blok weer tonen
         showJsonBtn.addEventListener('click', () => {
             jsonWrapper.style.display = 'block';
             showJsonBtn.classList.remove('visible');
@@ -823,7 +923,7 @@
             }, 100);
         });
 
-        console.log('✅ 4-Hoeken Quiz geladen!');
+        console.log('✅ Vlaggenquiz geladen!');
         console.log(`📚 ${STANDAARD_VRAGEN.length} standaard vragen beschikbaar.`);
     </script>
 
