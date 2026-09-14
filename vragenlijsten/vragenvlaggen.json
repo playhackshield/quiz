@@ -1,91 +1,91 @@
 [
   {
     "vraag": "Van welk land is deze vlag?",
-    "emoji": "🇹🇷",
+    "afbeelding": "https://flagcdn.com/w320/tr.png",
     "opties": ["Turkije", "Tunesië", "Algerije", "Pakistan"],
     "correct": "A"
   },
   {
     "vraag": "Van welk land is deze vlag?",
-    "emoji": "🇳🇱",
+    "afbeelding": "https://flagcdn.com/w320/nl.png",
     "opties": ["Luxemburg", "Nederland", "Frankrijk", "België"],
     "correct": "B"
   },
   {
     "vraag": "Van welk land is deze vlag?",
-    "emoji": "🇺🇸",
+    "afbeelding": "https://flagcdn.com/w320/us.png",
     "opties": ["Verenigde Staten", "Verenigd Koninkrijk", "Australië", "Liberia"],
     "correct": "A"
   },
   {
     "vraag": "Van welk land is deze vlag?",
-    "emoji": "🇨🇳",
+    "afbeelding": "https://flagcdn.com/w320/cn.png",
     "opties": ["Japan", "China", "Noord-Korea", "Vietnam"],
     "correct": "B"
   },
   {
     "vraag": "Van welk land is deze vlag?",
-    "emoji": "🇯🇵",
+    "afbeelding": "https://flagcdn.com/w320/jp.png",
     "opties": ["Japan", "Zuid-Korea", "Bangladesh", "Tunesië"],
     "correct": "A"
   },
   {
     "vraag": "Van welk land is deze vlag?",
-    "emoji": "🇲🇦",
+    "afbeelding": "https://flagcdn.com/w320/ma.png",
     "opties": ["China", "Vietnam", "Marokko", "Suriname"],
     "correct": "C"
   },
   {
     "vraag": "Van welk land is deze vlag?",
-    "emoji": "🇸🇷",
+    "afbeelding": "https://flagcdn.com/w320/sr.png",
     "opties": ["Suriname", "Guyana", "Trinidad en Tobago", "Barbados"],
     "correct": "A"
   },
   {
     "vraag": "Van welk land is deze vlag?",
-    "emoji": "🇪🇸",
+    "afbeelding": "https://flagcdn.com/w320/es.png",
     "opties": ["Portugal", "Spanje", "Italië", "Mexico"],
     "correct": "B"
   },
   {
     "vraag": "Van welk land is deze vlag?",
-    "emoji": "🇮🇩",
+    "afbeelding": "https://flagcdn.com/w320/id.png",
     "opties": ["Monaco", "Indonesië", "Polen", "Singapore"],
     "correct": "B"
   },
   {
     "vraag": "Van welk land is deze vlag?",
-    "emoji": "🇧🇮",
+    "afbeelding": "https://flagcdn.com/w320/bi.png",
     "opties": ["Burundi", "Kenia", "Oeganda", "Rwanda"],
     "correct": "A"
   },
   {
     "vraag": "Van welk land is deze vlag?",
-    "emoji": "🇵🇰",
+    "afbeelding": "https://flagcdn.com/w320/pk.png",
     "opties": ["Pakistan", "Saoedi-Arabië", "Algerije", "Turkije"],
     "correct": "A"
   },
   {
     "vraag": "Van welk land is deze vlag?",
-    "emoji": "🇸🇾",
+    "afbeelding": "https://flagcdn.com/w320/sy.png",
     "opties": ["Syrië", "Irak", "Jemen", "Egypte"],
     "correct": "A"
   },
   {
     "vraag": "Van welk land is deze vlag?",
-    "emoji": "🇹🇭",
+    "afbeelding": "https://flagcdn.com/w320/th.png",
     "opties": ["Cambodja", "Thailand", "Laos", "Myanmar"],
     "correct": "B"
   },
   {
     "vraag": "Van welk land is deze vlag?",
-    "emoji": "🇰🇭",
+    "afbeelding": "https://flagcdn.com/w320/kh.png",
     "opties": ["Thailand", "Vietnam", "Cambodja", "Laos"],
     "correct": "C"
   },
   {
     "vraag": "Van welk land is deze vlag?",
-    "emoji": "🇪🇷",
+    "afbeelding": "https://flagcdn.com/w320/er.png",
     "opties": ["Eritrea", "Ethiopië", "Djibouti", "Somalië"],
     "correct": "A"
   }
