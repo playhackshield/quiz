@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>Digibord - Quiz Server</title>
+  <!-- Firebase Compat SDK's -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+</head>
+<body>
+  <h1>Digibord Quiz Server</h1>
+
+  <label for="vragenlijst">Kies vragenlijst:</label>
+  <select id="vragenlijst">
+    <option value="vragen1.json">Vragenlijst 1 (Vlaggen)</option>
+    <option value="vragen2.json">Vragenlijst 2</option>
+  </select>
+  <button onclick="startSessie()">Start Sessie</button>
+
+  <hr>
+
+  <div id="quiz-box" style="display:none;">
+    <h2 id="vraag-tekst"></h2>
+    
+    <!-- Afbeelding element toevoegen -->
+    <div>
+      <img id="vraag-afbeelding" src="" alt="Vraag afbeelding" style="max-width: 300px; height: auto; display: none;">
+    </div>
+    
+    <ol type="A">
+      <li id="optie-A"></li>
+      <li id="optie-B"></li>
+      <li id="optie-C"></li>
+      <li id="optie-D"></li>
+    </ol>
+
+    <p><strong>Status:</strong> <span id="status-tekst">Aan het wachten...</span></p>
+
+    <button onclick="vorigeVraag()">Vorige Vraag</button>
+    <button onclick="volgendeVraag()">Volgende Vraag</button>
+
+    <h3>Scoreboard</h3>
+    <p>Team A: <b id="score-A">0</b> punten</p>
+    <p>Team B: <b id="score-B">0</b> punten</p>
+  </div>
+
+  <script>
+    const sessionRef = db.collection("sessions").doc("klas1");
+    let vragen = [];
+    let huidigeIndex = 0;
+    let scoreA = 0;
+    let scoreB = 0;
+
+    async function startSessie() {
+      const geselecteerdBestand = document.getElementById('vragenlijst').value;
+      const response = await fetch('vragenlijsten/' + geselecteerdBestand);
+      vragen = await response.json();
+      
+      huidigeIndex = 0;
+      scoreA = 0;
+      scoreB = 0;
+
+      document.getElementById('quiz-box').style.display = 'block';
+      
+      // Update eerste vraag direct in Firestore
+      stuurVraagNaarFirestore();
+      luisterNaarAntwoorden();
+    }
+
+    function toonVraag() {
+      const v = vragen[huidigeIndex];
+      document.getElementById('vraag-tekst').innerText = v.vraag;
+      
+      // Afbeelding inladen of verbergen als er geen url is
+      const imgElement = document.getElementById('vraag-afbeelding');
+      if (v.afbeelding) {
+        imgElement.src = v.afbeelding;
+        imgElement.style.display = 'block';
+      } else {
+        imgElement.style.display = 'none';
+        imgElement.src = '';
+      }
+
+      document.getElementById('optie-A').innerText = v.opties[0];
+      document.getElementById('optie-B').innerText = v.opties[1];
+      document.getElementById('optie-C').innerText = v.opties[2];
+      document.getElementById('optie-D').innerText = v.opties[3];
+      document.getElementById('status-tekst').innerText = "Wachten op antwoord...";
+    }
+
+    function stuurVraagNaarFirestore() {
+      toonVraag();
+      const v = vragen[huidigeIndex];
+      
+      sessionRef.set({
+        actieveVraagIndex: huidigeIndex,
+        vraagTekst: v.vraag,
+        opties: {
+          A: v.opties[0],
+          B: v.opties[1],
+          C: v.opties[2],
+          D: v.opties[3]
+        },
+        correctAntwoord: v.correct,
+        geantwoord: false,
+        scoreA: scoreA,
+        scoreB: scoreB
+      });
+    }
+
+    function volgendeVraag() {
+      if (huidigeIndex < vragen.length - 1) {
+        huidigeIndex++;
+        stuurVraagNaarFirestore();
+      }
+    }
+
+    function vorigeVraag() {
+      if (huidigeIndex > 0) {
+        huidigeIndex--;
+        stuurVraagNaarFirestore();
+      }
+    }
+
+    function luisterNaarAntwoorden() {
+      sessionRef.onSnapshot((doc) => {
+        const data = doc.data();
+        if (!data) return;
+
+        // Update scores op scherm
+        document.getElementById('score-A').innerText = data.scoreA;
+        document.getElementById('score-B').innerText = data.scoreB;
+
+        if (data.geantwoord) {
+          document.getElementById('status-tekst').innerText = 
+            `GEREND! Team ${data.geantwoordDoorTeam} drukte op ${data.gekozenAntwoord}. ` +
+            (data.isCorrect ? "JUIST! (+1 punt)" : "FOUT!");
+        }
+      });
+    }
+  </script>
+</body>
+</html>
