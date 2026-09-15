@@ -22,7 +22,26 @@ async function startSessie() {
 
 function toonVraag() {
   const v = vragen[huidigeIndex];
-  document.getElementById('emoji').innerText = v.emoji || '';
+  
+  // Afbeelding vs Emoji verwerking
+  const imgElement = document.getElementById('vraag-afbeelding');
+  const emojiElement = document.getElementById('emoji');
+
+  if (v.afbeelding) {
+    imgElement.src = v.afbeelding;
+    imgElement.style.display = 'inline-block';
+    emojiElement.style.display = 'none';
+  } else if (v.emoji) {
+    emojiElement.innerText = v.emoji;
+    emojiElement.style.display = 'block';
+    imgElement.style.display = 'none';
+    imgElement.src = '';
+  } else {
+    imgElement.style.display = 'none';
+    emojiElement.style.display = 'none';
+    imgElement.src = '';
+  }
+
   document.getElementById('vraag-tekst').innerText = v.vraag;
   document.getElementById('optie-A').innerText = v.opties[0];
   document.getElementById('optie-B').innerText = v.opties[1];
