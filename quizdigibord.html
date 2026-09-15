@@ -1,931 +1,271 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>4-Hoeken Quiz</title>
-    <style>
-        /* ===== ALGEMENE STIJL ===== */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f4f8;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digibord - Quiz Server</title>
+  
+  <!-- Firebase Compat SDK's -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  
+  <!-- App Scripts -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/quizdigibord.js" defer></script>
 
-        /* ===== JSON INPUT ===== */
-        .json-wrapper {
-            width: 100%;
-            max-width: 900px;
-            position: relative;
-            margin-bottom: 25px;
-        }
-        .json-section {
-            width: 100%;
-            background: white;
-            border-radius: 14px;
-            padding: 20px 24px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-        }
-        .json-section label {
-            font-weight: 600;
-            color: #1a2a3a;
-            display: block;
-            margin-bottom: 8px;
-        }
-        .json-section textarea {
-            width: 100%;
-            min-height: 120px;
-            padding: 12px 16px;
-            border: 1.5px solid #d0dce8;
-            border-radius: 10px;
-            font-family: 'Consolas', 'Courier New', monospace;
-            font-size: 0.9rem;
-            resize: vertical;
-            background: #fafcfe;
-            transition: border 0.2s;
-        }
-        .json-section textarea:focus {
-            outline: none;
-            border-color: #4a8ab0;
-            box-shadow: 0 0 0 3px rgba(74, 138, 176, 0.12);
-        }
-        .json-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 12px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        .json-actions .generate-btn {
-            background: #2a6a9a;
-            color: white;
-            border: none;
-            padding: 10px 32px;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(42, 106, 154, 0.25);
-        }
-        .json-actions .generate-btn:hover {
-            background: #1a4a7a;
-            transform: scale(1.02);
-        }
-        .json-actions .generate-btn:active {
-            transform: scale(0.97);
-        }
-        .json-actions .clear-btn {
-            background: #d0dce8;
-            color: #2a4a6a;
-            border: none;
-            padding: 10px 24px;
-            border-radius: 30px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .json-actions .clear-btn:hover {
-            background: #bcc8d8;
-        }
-        .json-status {
-            margin-top: 8px;
-            font-size: 0.9rem;
-            color: #4a7a4a;
-        }
-        .json-status.error {
-            color: #b03a2a;
-        }
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-        /* Sluit-knopje voor JSON-blok */
-        .json-close-btn {
-            position: absolute;
-            top: 10px;
-            right: 14px;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: #8a9aaa;
-            cursor: pointer;
-            line-height: 1;
-            padding: 4px 8px;
-            border-radius: 50%;
-            transition: all 0.2s ease;
-            z-index: 2;
-        }
-        .json-close-btn:hover {
-            color: #c0392b;
-            background: #fde8e4;
-        }
+    body {
+      background-color: #f0f4f8;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
 
-        /* Toon-knopje wanneer JSON-blok verborgen is */
-        .show-json-btn {
-            display: none;
-            background: #2a6a9a;
-            color: white;
-            border: none;
-            padding: 10px 28px;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(42, 106, 154, 0.25);
-            transition: all 0.2s ease;
-            margin-bottom: 25px;
-        }
-        .show-json-btn:hover {
-            background: #1a4a7a;
-            transform: scale(1.02);
-        }
-        .show-json-btn.visible {
-            display: inline-block;
-        }
+    .container {
+      width: 100%;
+      max-width: 900px;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
 
-        /* ===== QUIZ CONTAINER ===== */
-        .quiz-container {
-            width: 100%;
-            max-width: 900px;
-            background: white;
-            border-radius: 18px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-            padding: 32px 36px 28px 36px;
-            display: none;
-            animation: fadeSlide 0.4s ease;
-        }
-        .quiz-container.visible {
-            display: block;
-        }
-        @keyframes fadeSlide {
-            0% { opacity: 0; transform: translateY(-12px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
+    h1 {
+      text-align: center;
+      color: #1e293b;
+      margin-top: 0;
+      font-size: 2.2rem;
+    }
 
-        /* ===== QUIZ HEADER ===== */
-        .quiz-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .quiz-header .vraag-teller {
-            font-size: 0.9rem;
-            color: #4a6a8a;
-            background: #eaf0f6;
-            padding: 4px 16px;
-            border-radius: 30px;
-            font-weight: 500;
-        }
-        .quiz-header .leerling-naam {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #1a3a5a;
-            background: #dce8f4;
-            padding: 4px 18px;
-            border-radius: 30px;
-        }
-        .quiz-header .leerling-naam:empty {
-            display: none;
-        }
+    /* Controls bovenaan */
+    .control-panel {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      justify-content: center;
+      background: #f8fafc;
+      padding: 15px;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      margin-bottom: 25px;
+    }
 
-        /* ===== AFBEELDING (vlag) ===== */
-        .vraag-afbeelding {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .vraag-afbeelding img {
-            max-width: 320px;
-            max-height: 200px;
-            width: auto;
-            height: auto;
-            border-radius: 10px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-            border: 2px solid #e0e8f0;
-        }
+    label {
+      font-weight: 600;
+      color: #475569;
+    }
 
-        /* ===== VRAAG ===== */
-        .vraag-tekst {
-            font-size: 1.5rem;
-            font-weight: 500;
-            color: #0a1a2a;
-            margin-bottom: 28px;
-            line-height: 1.4;
-            padding: 8px 4px;
-            text-align: center;
-        }
-        .vraag-tekst .vraag-nummer {
-            color: #6a8aaa;
-            font-weight: 400;
-            font-size: 1.1rem;
-        }
+    select {
+      padding: 10px 15px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      font-size: 1rem;
+      background: white;
+      cursor: pointer;
+    }
 
-        /* ===== ANTWOORDEN GRID ===== */
-        .antwoorden-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 28px;
-        }
-        @media (max-width: 650px) {
-            .antwoorden-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
 
-        .antwoord-optie {
-            padding: 18px 20px;
-            border-radius: 14px;
-            border: 3px solid #e0e8f0;
-            background: #fafcfe;
-            font-size: 1.05rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
-        }
-        .antwoord-optie:hover:not(.disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.06);
-        }
-        .antwoord-optie .letter {
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: #e8eef4;
-            font-weight: 700;
-            font-size: 0.9rem;
-            color: #1a2a3a;
-            flex-shrink: 0;
-        }
+    .btn-primary {
+      background-color: #2563eb;
+      color: white;
+    }
 
-        /* Kleuren voor de opties (overeenkomstig de 4 hoeken) */
-        .antwoord-optie.kleur-a { border-color: #e74c3c; }
-        .antwoord-optie.kleur-a .letter { background: #e74c3c; color: white; }
-        .antwoord-optie.kleur-b { border-color: #3498db; }
-        .antwoord-optie.kleur-b .letter { background: #3498db; color: white; }
-        .antwoord-optie.kleur-c { border-color: #2ecc71; }
-        .antwoord-optie.kleur-c .letter { background: #2ecc71; color: white; }
-        .antwoord-optie.kleur-d { border-color: #f1c40f; }
-        .antwoord-optie.kleur-d .letter { background: #f1c40f; color: #1a2a3a; }
+    .btn-primary:hover {
+      background-color: #1d4ed8;
+    }
 
-        /* Geselecteerd / antwoord tonen */
-        .antwoord-optie.correct {
-            border-color: #27ae60 !important;
-            background: #e8f8ef !important;
-            box-shadow: 0 0 0 4px rgba(39, 174, 96, 0.2);
-        }
-        .antwoord-optie.correct .letter {
-            background: #27ae60 !important;
-            color: white !important;
-        }
-        .antwoord-optie.fout {
-            border-color: #e74c3c !important;
-            background: #fde8e4 !important;
-            opacity: 0.7;
-        }
-        .antwoord-optie.fout .letter {
-            background: #e74c3c !important;
-            color: white !important;
-        }
-        .antwoord-optie.disabled {
-            cursor: default;
-            opacity: 0.85;
-        }
-        .antwoord-optie.disabled:hover {
-            transform: none !important;
-            box-shadow: none !important;
-        }
+    .btn-nav {
+      background-color: #64748b;
+      color: white;
+      font-size: 1.1rem;
+      padding: 12px 24px;
+    }
 
-        /* ===== NAVIGATIE ===== */
-        .quiz-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 8px;
-            border-top: 1.5px solid #e8eef4;
-            padding-top: 20px;
-        }
-        .quiz-nav .nav-buttons {
-            display: flex;
-            gap: 10px;
-        }
-        .quiz-nav button {
-            padding: 10px 24px;
-            border: none;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .quiz-nav .prev-btn {
-            background: #d0dce8;
-            color: #2a4a6a;
-        }
-        .quiz-nav .prev-btn:hover:not(:disabled) {
-            background: #bcc8d8;
-        }
-        .quiz-nav .next-btn {
-            background: #2a6a9a;
-            color: white;
-        }
-        .quiz-nav .next-btn:hover:not(:disabled) {
-            background: #1a4a7a;
-        }
-        .quiz-nav button:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-        .quiz-nav .toon-antwoord-btn {
-            background: #e67e22;
-            color: white;
-            padding: 10px 28px;
-        }
-        .quiz-nav .toon-antwoord-btn:hover:not(:disabled) {
-            background: #d35400;
-        }
-        .quiz-nav .toon-antwoord-btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-        .quiz-nav .reset-btn {
-            background: #e8eef4;
-            color: #4a5a6a;
-        }
-        .quiz-nav .reset-btn:hover {
-            background: #d0dce8;
-        }
+    .btn-nav:hover {
+      background-color: #475569;
+    }
 
-        /* ===== LEGENDA (kleuren = hoeken) ===== */
-        .kleuren-legenda {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin: 0 0 20px 0;
-            padding: 10px 16px;
-            background: #f8fafc;
-            border-radius: 12px;
-            border: 1px dashed #d0dce8;
-        }
-        .kleuren-legenda span {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: #2a4a6a;
-        }
-        .kleuren-legenda .kleur-blok {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border-radius: 6px;
-            border: 2px solid #c0d0e0;
-        }
-        .kleur-blok.rood { background: #e74c3c; }
-        .kleur-blok.blauw { background: #3498db; }
-        .kleur-blok.groen { background: #2ecc71; }
-        .kleur-blok.geel { background: #f1c40f; }
+    /* Vraag & Antwoorden styling */
+    .vraag-header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
 
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 700px) {
-            .quiz-container {
-                padding: 20px 16px;
-            }
-            .vraag-tekst {
-                font-size: 1.2rem;
-            }
-            .vraag-afbeelding img {
-                max-width: 220px;
-                max-height: 140px;
-            }
-            .antwoord-optie {
-                padding: 14px 16px;
-                font-size: 0.95rem;
-            }
-            .quiz-nav {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .quiz-nav .nav-buttons {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            .quiz-nav button {
-                padding: 8px 18px;
-                font-size: 0.9rem;
-            }
-            .kleuren-legenda {
-                gap: 10px;
-            }
-        }
-        @media (max-width: 480px) {
-            .json-section { padding: 14px 16px; }
-            .antwoorden-grid { gap: 10px; }
-        }
-    </style>
+    #emoji {
+      font-size: 3rem;
+      margin: 0 0 10px 0;
+    }
+
+    #vraag-tekst {
+      font-size: 1.8rem;
+      color: #0f172a;
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    .opties-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      list-style: none;
+      padding: 0;
+      margin: 25px 0;
+    }
+
+    .optie-card {
+      padding: 20px;
+      border-radius: 12px;
+      color: white;
+      font-size: 1.3rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .optie-card::before {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 50%;
+      margin-right: 15px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    /* Antwoord Kleuren */
+    #optie-A {
+      background-color: #e11d48; /* Rood */
+    }
+    #optie-A::before { content: "A"; }
+
+    #optie-B {
+      background-color: #2563eb; /* Blauw */
+    }
+    #optie-B::before { content: "B"; }
+
+    #optie-C {
+      background-color: #d97706; /* Geel / Amber */
+    }
+    #optie-C::before { content: "C"; }
+
+    #optie-D {
+      background-color: #16a34a; /* Groen */
+    }
+    #optie-D::before { content: "D"; }
+
+    /* Status & Navigatie */
+    .status-bar {
+      text-align: center;
+      font-size: 1.1rem;
+      color: #64748b;
+      margin-bottom: 20px;
+    }
+
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 30px;
+    }
+
+    /* Scoreboard */
+    .scoreboard {
+      background: #f1f5f9;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .scoreboard h3 {
+      margin-top: 0;
+      color: #334155;
+      font-size: 1.4rem;
+    }
+
+    .scores {
+      display: flex;
+      justify-content: space-around;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .team-score {
+      background: white;
+      padding: 15px 30px;
+      border-radius: 10px;
+      border: 2px solid #e2e8f0;
+      min-width: 180px;
+    }
+
+    .team-a { color: #2563eb; }
+    .team-b { color: #dc2626; }
+  </style>
 </head>
 <body>
 
-    <!-- ===== JSON INPUT ===== -->
-    <div class="json-wrapper" id="jsonWrapper">
-        <div class="json-section" id="jsonSection">
-            <button class="json-close-btn" id="jsonCloseBtn" title="Verberg dit blok">✕</button>
-            <label for="jsonInput">📋 Plak hier je JSON met quizvragen:</label>
-            <textarea id="jsonInput" placeholder='[
-  {
-    "vraag": "Van welk land is deze vlag?",
-    "afbeelding": "https://flagcdn.com/w320/tr.png",
-    "opties": ["Turkije", "Tunesië", "Algerije", "Pakistan"],
-    "correct": "A"
-  }
-]'></textarea>
-            <div class="json-actions">
-                <button class="generate-btn" id="generateBtn">🚀 Genereer quiz</button>
-                <button class="clear-btn" id="clearBtn">🗑️ Leeg maken</button>
-                <button class="clear-btn" id="defaultBtn">📚 Gebruik standaard vragen</button>
-            </div>
-            <div id="jsonStatus" class="json-status"></div>
-        </div>
+  <div class="container">
+    <h1>Digibord Quiz Server</h1>
+
+    <div class="control-panel">
+      <label for="vragenlijst">Kies vragenlijst:</label>
+      <select id="vragenlijst">
+        <option value="vragen1.json">Vragenlijst 1</option>
+        <option value="vragen2.json">Vragenlijst 2</option>
+      </select>
+      <button class="btn-primary" onclick="startSessie()">Start Sessie</button>
     </div>
 
-    <!-- ===== TOON JSON KNOP ===== -->
-    <button class="show-json-btn" id="showJsonBtn">📋 Toon JSON-invoer</button>
+    <div id="quiz-box" style="display:none;">
+      <div class="vraag-header">
+        <h2 id="emoji"></h2>
+        <h2 id="vraag-tekst"></h2>
+      </div>
+      
+      <ul class="opties-grid">
+        <li class="optie-card" id="optie-A"></li>
+        <li class="optie-card" id="optie-B"></li>
+        <li class="optie-card" id="optie-C"></li>
+        <li class="optie-card" id="optie-D"></li>
+      </ul>
 
-    <!-- ===== QUIZ ===== -->
-    <div class="quiz-container" id="quizContainer">
-        <!-- Kleuren legenda -->
-        <div class="kleuren-legenda">
-            <span><span class="kleur-blok rood"></span> Hoek A (Rood)</span>
-            <span><span class="kleur-blok blauw"></span> Hoek B (Blauw)</span>
-            <span><span class="kleur-blok groen"></span> Hoek C (Groen)</span>
-            <span><span class="kleur-blok geel"></span> Hoek D (Geel)</span>
-        </div>
+      <p class="status-bar"><strong>Status:</strong> <span id="status-tekst">Aan het wachten...</span></p>
 
-        <!-- Quiz header -->
-        <div class="quiz-header">
-            <span class="vraag-teller" id="vraagTeller">Vraag 1 / 10</span>
-            <span class="leerling-naam" id="leerlingNaam"></span>
-        </div>
+      <div class="nav-buttons">
+        <button class="btn-nav" onclick="vorigeVraag()">← Vorige Vraag</button>
+        <button class="btn-nav" onclick="volgendeVraag()">Volgende Vraag →</button>
+      </div>
 
-        <!-- Afbeelding (optioneel) -->
-        <div class="vraag-afbeelding" id="vraagAfbeelding" style="display:none;">
-            <img id="vraagAfbeeldingImg" src="" alt="Vraag afbeelding" />
+      <div class="scoreboard">
+        <h3>Scoreboard</h3>
+        <div class="scores">
+          <div class="team-score team-a">Team A: <span id="score-A">0</span> pt</div>
+          <div class="team-score team-b">Team B: <span id="score-B">0</span> pt</div>
         </div>
-
-        <!-- Vraag -->
-        <div class="vraag-tekst" id="vraagTekst">
-            <span class="vraag-nummer">1.</span> Van welk land is deze vlag?
-        </div>
-
-        <!-- Antwoorden -->
-        <div class="antwoorden-grid" id="antwoordenGrid">
-            <div class="antwoord-optie kleur-a" data-index="0">
-                <span class="letter">A</span> Optie A
-            </div>
-            <div class="antwoord-optie kleur-b" data-index="1">
-                <span class="letter">B</span> Optie B
-            </div>
-            <div class="antwoord-optie kleur-c" data-index="2">
-                <span class="letter">C</span> Optie C
-            </div>
-            <div class="antwoord-optie kleur-d" data-index="3">
-                <span class="letter">D</span> Optie D
-            </div>
-        </div>
-
-        <!-- Navigatie -->
-        <div class="quiz-nav">
-            <div class="nav-buttons">
-                <button class="prev-btn" id="prevBtn" disabled>◀ Vorige</button>
-                <button class="next-btn" id="nextBtn">Volgende ▶</button>
-            </div>
-            <div class="nav-buttons">
-                <button class="toon-antwoord-btn" id="toonAntwoordBtn">✅ Toon antwoord</button>
-                <button class="reset-btn" id="resetBtn">🔄 Reset</button>
-            </div>
-        </div>
+      </div>
     </div>
-
-    <script>
-        // ================================================================
-        // 1. STANDAARD VRAGEN (vlaggenquiz)
-        // ================================================================
-        const STANDAARD_VRAGEN = [
-  {
-    "vraag": "Van welk land is deze vlag?",
-    "afbeelding": "https://flagcdn.com/w320/tr.png",
-    "opties": ["Turkije", "Tunesië", "Algerije", "Pakistan"],
-    "correct": "A"
-  },
-  {
-    "vraag": "Van welk land is deze vlag?",
-    "afbeelding": "https://flagcdn.com/w320/nl.png",
-    "opties": ["Luxemburg", "Nederland", "Frankrijk", "België"],
-    "correct": "B"
-  },
-  {
-    "vraag": "Van welk land is deze vlag?",
-    "afbeelding": "https://flagcdn.com/w320/us.png",
-    "opties": ["Verenigde Staten", "Verenigd Koninkrijk", "Australië", "Liberia"],
-    "correct": "A"
-  },
-  {
-    "vraag": "Van welk land is deze vlag?",
-    "afbeelding": "https://flagcdn.com/w320/cn.png",
-    "opties": ["Japan", "China", "Noord-Korea", "Vietnam"],
-    "correct": "B"
-  },
-  {
-    "vraag": "Van welk land is deze vlag?",
-    "afbeelding": "https://flagcdn.com/w320/jp.png",
-    "opties": ["Japan", "Zuid-Korea", "Bangladesh", "Tunesië"],
-    "correct": "A"
-  },
-  {
-    "vraag": "Van welk land is deze vlag?",
-    "afbeelding": "https://flagcdn.com/w320/ma.png",
-    "opties": ["China", "Vietnam", "Marokko", "Suriname"],
-    "correct": "C"
-  },
-  {
-    "vraag": "Van welk land is deze vlag?",
-    "afbeelding": "https://flagcdn.com/w320/sr.png",
-    "opties": ["Suriname", "Guyana", "Trinidad en Tobago", "Barbados"],
-    "correct": "A"
-  },
-  {
-    "vraag": "Van welk land is deze vlag?",
-    "afbeelding": "https://flagcdn.com/w320/es.png",
-    "opties": ["Portugal", "Spanje", "Italië", "Mexico"],
-    "correct": "B"
-  },
-  {
-    "vraag": "Van welk land is deze vlag?",
-    "afbeelding": "https://flagcdn.com/w320/id.png",
-    "opties": ["Monaco", "Indonesië", "Polen", "Singapore"],
-    "correct": "B"
-  },
-  {
-    "vraag": "Van welk land is deze vlag?",
-    "afbeelding": "https://flagcdn.com/w320/bi.png",
-    "opties": ["Burundi", "Kenia", "Oeganda", "Rwanda"],
-    "correct": "A"
-  },
-  {
-    "vraag": "Van welk land is deze vlag?",
-    "afbeelding": "https://flagcdn.com/w320/pk.png",
-    "opties": ["Pakistan", "Saoedi-Arabië", "Algerije", "Turkije"],
-    "correct": "A"
-  },
-  {
-    "vraag": "Van welk land is deze vlag?",
-    "afbeelding": "https://flagcdn.com/w320/sy.png",
-    "opties": ["Syrië", "Irak", "Jemen", "Egypte"],
-    "correct": "A"
-  },
-  {
-    "vraag": "Van welk land is deze vlag?",
-    "afbeelding": "https://flagcdn.com/w320/th.png",
-    "opties": ["Cambodja", "Thailand", "Laos", "Myanmar"],
-    "correct": "B"
-  },
-  {
-    "vraag": "Van welk land is deze vlag?",
-    "afbeelding": "https://flagcdn.com/w320/kh.png",
-    "opties": ["Thailand", "Vietnam", "Cambodja", "Laos"],
-    "correct": "C"
-  },
-  {
-    "vraag": "Van welk land is deze vlag?",
-    "afbeelding": "https://flagcdn.com/w320/er.png",
-    "opties": ["Eritrea", "Ethiopië", "Djibouti", "Somalië"],
-    "correct": "A"
-  }
-];
-
-        // ================================================================
-        // 2. STATE
-        // ================================================================
-        let quizVragen = [];
-        let huidigeIndex = 0;
-        let antwoordGetoond = false;
-
-        // ================================================================
-        // 3. DOM REFERENTIES
-        // ================================================================
-        const jsonInput = document.getElementById('jsonInput');
-        const generateBtn = document.getElementById('generateBtn');
-        const clearBtn = document.getElementById('clearBtn');
-        const defaultBtn = document.getElementById('defaultBtn');
-        const jsonStatus = document.getElementById('jsonStatus');
-        const jsonWrapper = document.getElementById('jsonWrapper');
-        const jsonCloseBtn = document.getElementById('jsonCloseBtn');
-        const showJsonBtn = document.getElementById('showJsonBtn');
-
-        const quizContainer = document.getElementById('quizContainer');
-        const vraagTeller = document.getElementById('vraagTeller');
-        const leerlingNaam = document.getElementById('leerlingNaam');
-        const vraagAfbeelding = document.getElementById('vraagAfbeelding');
-        const vraagAfbeeldingImg = document.getElementById('vraagAfbeeldingImg');
-        const vraagTekst = document.getElementById('vraagTekst');
-        const antwoordenGrid = document.getElementById('antwoordenGrid');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const toonAntwoordBtn = document.getElementById('toonAntwoordBtn');
-        const resetBtn = document.getElementById('resetBtn');
-
-        // ================================================================
-        // 4. KLEUREN & LETTERS
-        // ================================================================
-        const KLEUREN = ['kleur-a', 'kleur-b', 'kleur-c', 'kleur-d'];
-        const LETTERS = ['A', 'B', 'C', 'D'];
-
-        // ================================================================
-        // 5. HELPER: correct-waarde omzetten naar index
-        // ================================================================
-        function correctNaarIndex(correct) {
-            // Als het een getal is, gebruik het direct
-            if (typeof correct === 'number') {
-                return correct;
-            }
-            // Als het een letter is ("A", "B", "C", "D"), zet om naar index
-            if (typeof correct === 'string') {
-                const idx = LETTERS.indexOf(correct.toUpperCase());
-                if (idx !== -1) return idx;
-                // Misschien is het een getal als string?
-                const num = parseInt(correct, 10);
-                if (!isNaN(num)) return num;
-            }
-            return 0; // fallback
-        }
-
-        // ================================================================
-        // 6. QUIZ FUNCTIES
-        // ================================================================
-        function laadQuiz(vragen) {
-            if (!vragen || vragen.length === 0) {
-                jsonStatus.textContent = '⚠️ Geen geldige vragen gevonden. Gebruik standaard vragen.';
-                jsonStatus.className = 'json-status error';
-                quizVragen = [...STANDAARD_VRAGEN];
-            } else {
-                jsonStatus.textContent = `✅ ${vragen.length} vragen geladen!`;
-                jsonStatus.className = 'json-status';
-                quizVragen = [...vragen];
-            }
-
-            huidigeIndex = 0;
-            antwoordGetoond = false;
-            quizContainer.classList.add('visible');
-            toonVraag(huidigeIndex);
-        }
-
-        function toonVraag(index) {
-            if (!quizVragen || quizVragen.length === 0) return;
-
-            const vraag = quizVragen[index];
-            if (!vraag) return;
-
-            // Teller
-            vraagTeller.textContent = `Vraag ${index + 1} / ${quizVragen.length}`;
-
-            // Leerlingnaam (optioneel)
-            if (vraag.leerling) {
-                leerlingNaam.textContent = `👤 ${vraag.leerling}`;
-            } else {
-                leerlingNaam.textContent = '';
-            }
-
-            // Afbeelding (optioneel)
-            if (vraag.afbeelding) {
-                vraagAfbeeldingImg.src = vraag.afbeelding;
-                vraagAfbeelding.style.display = 'flex';
-            } else {
-                vraagAfbeeldingImg.src = '';
-                vraagAfbeelding.style.display = 'none';
-            }
-
-            // Vraagtekst
-            const vraagNummer = index + 1;
-            vraagTekst.innerHTML = `<span class="vraag-nummer">${vraagNummer}.</span> ${vraag.vraag || 'Geen vraag'}`;
-
-            // Antwoorden
-            const opties = vraag.opties || ['Optie A', 'Optie B', 'Optie C', 'Optie D'];
-            const antwoordElementen = antwoordenGrid.querySelectorAll('.antwoord-optie');
-
-            antwoordElementen.forEach((el, i) => {
-                const letter = LETTERS[i] || String.fromCharCode(65 + i);
-                const kleur = KLEUREN[i] || 'kleur-a';
-                const tekst = opties[i] || `Optie ${letter}`;
-
-                // Reset classes
-                el.className = `antwoord-optie ${kleur}`;
-                el.dataset.index = i;
-                el.innerHTML = `<span class="letter">${letter}</span> ${tekst}`;
-
-                // Verwijder event listeners (voorkomt dubbel)
-                el.replaceWith(el.cloneNode(true));
-            });
-
-            // Haal de nieuwe elementen op en voeg click listeners toe
-            const nieuweOpties = antwoordenGrid.querySelectorAll('.antwoord-optie');
-            nieuweOpties.forEach((el, i) => {
-                el.addEventListener('click', () => {
-                    if (antwoordGetoond) return;
-                    if (el.classList.contains('disabled')) return;
-                    toonAntwoordVoorVraag(index);
-                });
-            });
-
-            // Reset antwoord getoond status
-            antwoordGetoond = false;
-
-            // Navigatie knoppen
-            prevBtn.disabled = index === 0;
-            nextBtn.disabled = index === quizVragen.length - 1;
-
-            // Toon antwoord knop inschakelen
-            toonAntwoordBtn.disabled = false;
-
-            // Verwijder alle markeringen (correct/fout) van de antwoorden
-            nieuweOpties.forEach(el => {
-                el.classList.remove('correct', 'fout', 'disabled');
-            });
-        }
-
-        function toonAntwoordVoorVraag(index) {
-            if (!quizVragen || quizVragen.length === 0) return;
-            const vraag = quizVragen[index];
-            if (!vraag) return;
-
-            const correctIndex = correctNaarIndex(vraag.correct);
-            if (correctIndex === undefined || correctIndex === null) return;
-
-            antwoordGetoond = true;
-
-            const opties = antwoordenGrid.querySelectorAll('.antwoord-optie');
-            opties.forEach((el, i) => {
-                el.classList.add('disabled');
-                if (i === correctIndex) {
-                    el.classList.add('correct');
-                } else {
-                    el.classList.add('fout');
-                }
-            });
-
-            toonAntwoordBtn.disabled = true;
-        }
-
-        function resetQuiz() {
-            if (!quizVragen || quizVragen.length === 0) return;
-            antwoordGetoond = false;
-            toonVraag(huidigeIndex);
-        }
-
-        function gaNaarVorige() {
-            if (huidigeIndex > 0) {
-                huidigeIndex--;
-                toonVraag(huidigeIndex);
-            }
-        }
-
-        function gaNaarVolgende() {
-            if (huidigeIndex < quizVragen.length - 1) {
-                huidigeIndex++;
-                toonVraag(huidigeIndex);
-            }
-        }
-
-        // ================================================================
-        // 7. JSON PARSEN
-        // ================================================================
-        function parseJSONInput() {
-            const text = jsonInput.value.trim();
-            if (!text) {
-                jsonStatus.textContent = '📚 Geen JSON gevonden. Standaard vragen worden geladen.';
-                jsonStatus.className = 'json-status';
-                laadQuiz([...STANDAARD_VRAGEN]);
-                return;
-            }
-
-            try {
-                const data = JSON.parse(text);
-                if (!Array.isArray(data)) {
-                    throw new Error('JSON moet een array zijn.');
-                }
-                // Valideer structuur (leerling is optioneel, afbeelding is optioneel)
-                const isValid = data.every(item =>
-                    item.vraag !== undefined &&
-                    Array.isArray(item.opties) &&
-                    item.opties.length === 4 &&
-                    item.correct !== undefined
-                );
-
-                if (!isValid) {
-                    throw new Error('Ongeldige structuur. Zorg dat elk item "vraag", "opties" (4 items) en "correct" bevat.');
-                }
-
-                laadQuiz(data);
-            } catch (e) {
-                jsonStatus.textContent = `❌ Fout: ${e.message}`;
-                jsonStatus.className = 'json-status error';
-                console.error('JSON parse error:', e);
-                laadQuiz([...STANDAARD_VRAGEN]);
-            }
-        }
-
-        // ================================================================
-        // 8. EVENT LISTENERS
-        // ================================================================
-        generateBtn.addEventListener('click', parseJSONInput);
-
-        clearBtn.addEventListener('click', () => {
-            jsonInput.value = '';
-            jsonStatus.textContent = '🗑️ Inhoud gewist. Klik op "Genereer" om standaard vragen te laden.';
-            jsonStatus.className = 'json-status';
-            quizContainer.classList.remove('visible');
-        });
-
-        defaultBtn.addEventListener('click', () => {
-            jsonInput.value = '';
-            jsonStatus.textContent = '📚 Standaard vragen geladen!';
-            jsonStatus.className = 'json-status';
-            laadQuiz([...STANDAARD_VRAGEN]);
-        });
-
-        prevBtn.addEventListener('click', gaNaarVorige);
-        nextBtn.addEventListener('click', gaNaarVolgende);
-
-        toonAntwoordBtn.addEventListener('click', () => {
-            toonAntwoordVoorVraag(huidigeIndex);
-        });
-
-        resetBtn.addEventListener('click', resetQuiz);
-
-        // JSON-blok verbergen
-        jsonCloseBtn.addEventListener('click', () => {
-            jsonWrapper.style.display = 'none';
-            showJsonBtn.classList.add('visible');
-        });
-
-        // JSON-blok weer tonen
-        showJsonBtn.addEventListener('click', () => {
-            jsonWrapper.style.display = 'block';
-            showJsonBtn.classList.remove('visible');
-        });
-
-        // ================================================================
-        // 9. KEYBOARD NAVIGATIE
-        // ================================================================
-        document.addEventListener('keydown', (e) => {
-            if (!quizContainer.classList.contains('visible')) return;
-            if (e.key === 'ArrowLeft' && !prevBtn.disabled) {
-                e.preventDefault();
-                gaNaarVorige();
-            } else if (e.key === 'ArrowRight' && !nextBtn.disabled) {
-                e.preventDefault();
-                gaNaarVolgende();
-            } else if (e.key === 'Enter' && !toonAntwoordBtn.disabled) {
-                e.preventDefault();
-                toonAntwoordBtn.click();
-            } else if (e.key === 'r' || e.key === 'R') {
-                resetBtn.click();
-            }
-        });
-
-        // ================================================================
-        // 10. START
-        // ================================================================
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                laadQuiz([...STANDAARD_VRAGEN]);
-            }, 100);
-        });
-
-        console.log('✅ Vlaggenquiz geladen!');
-        console.log(`📚 ${STANDAARD_VRAGEN.length} standaard vragen beschikbaar.`);
-    </script>
+  </div>
 
 </body>
 </html>
