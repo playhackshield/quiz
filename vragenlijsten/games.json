@@ -1,91 +1,91 @@
 [
   {
     "vraag": "Van welke game is dit logo?",
-    "afbeelding": "https://www.stickpng.com/img/games/minecraft/logo-minecraft",
+    "afbeelding": "https://playhackshield.github.io/quiz/assets/minecraft.jpg",
     "opties": ["Minecraft", "Roblox", "Terraria", "Lego Worlds"],
     "correct": "A"
   },
   {
     "vraag": "Van welke game is dit logo?",
-    "afbeelding": "https://commons.wikimedia.org/wiki/File:Roblox_Logo_2022.svg",
+    "afbeelding": "https://playhackshield.github.io/quiz/assets/roblox.png",
     "opties": ["Minecraft", "Roblox", "Among Us", "Stumble Guys"],
     "correct": "B"
   },
   {
     "vraag": "Van welke game is dit logo?",
-    "afbeelding": "https://www.stickpng.com/img/games/new-super-mario-bros/super-mario-logo",
+    "afbeelding": "https://playhackshield.github.io/quiz/assets/supermario.png",
     "opties": ["Sonic the Hedgehog", "Kirby", "Super Mario", "Yoshi"],
     "correct": "C"
   },
   {
     "vraag": "Van welke game is dit logo?",
-    "afbeelding": "https://commons.wikimedia.org/wiki/File:Pokemon_logo.png",
+    "afbeelding": "https://playhackshield.github.io/quiz/assets/pokemon.jpg",
     "opties": ["Pokémon", "Digimon", "Animal Crossing", "Splatoon"],
     "correct": "A"
   },
   {
     "vraag": "Van welke game is dit logo?",
-    "afbeelding": "https://www.stickpng.com/img/cartoons/among-us/among-us-logo",
+    "afbeelding": "https://playhackshield.github.io/quiz/assets/amongus.png",
     "opties": ["Fall Guys", "Brawl Stars", "Among Us", "Subway Surfers"],
     "correct": "C"
   },
   {
     "vraag": "Van welke game is dit logo?",
-    "afbeelding": "https://www.stickpng.com/img/games/fortnite/fortnite-logo",
+    "afbeelding": "https://playhackshield.github.io/quiz/assets/fortnite.jpg",
     "opties": ["Fortnite", "Rocket League", "Overwatch 2", "Splatoon"],
     "correct": "A"
   },
   {
     "vraag": "Van welke game is dit logo?",
-    "afbeelding": "https://commons.wikimedia.org/wiki/File:Animal_Crossing-New_Horizons.png",
+    "afbeelding": "https://playhackshield.github.io/quiz/assets/animalcrossing.jpg",
     "opties": ["Mario Kart", "Animal Crossing: New Horizons", "Pokémon", "Luigi's Mansion"],
     "correct": "B"
   },
   {
     "vraag": "Van welke game is dit logo?",
-    "afbeelding": "https://seeklogo.com/free-vector-logos/sonic-the-hedgehog",
+    "afbeelding": "https://playhackshield.github.io/quiz/assets/sonic.jpg",
     "opties": ["Super Mario", "Crash Bandicoot", "Sonic the Hedgehog", "Pac-Man"],
     "correct": "C"
   },
   {
     "vraag": "Van welke game is dit logo?",
-    "afbeelding": "https://commons.wikimedia.org/wiki/File:PAC-MAN_logo.png",
+    "afbeelding": "https://playhackshield.github.io/quiz/assets/pacman.jpg",
     "opties": ["Pac-Man", "Kirby", "Tetris", "Donkey Kong"],
     "correct": "A"
   },
   {
     "vraag": "Van welke game is dit logo?",
-    "afbeelding": "https://seeklogo.com/free-vector-logos/zelda",
+    "afbeelding": "https://playhackshield.github.io/quiz/assets/zelda.jpg",
     "opties": ["Kirby", "The Legend of Zelda", "Metroid", "Fire Emblem"],
     "correct": "B"
   },
   {
     "vraag": "Van welke game is dit logo?",
-    "afbeelding": "https://www.cleanpng.com/free/rocket-league-logo.html",
+    "afbeelding": "https://playhackshield.github.io/quiz/assets/rocketleague.jpg",
     "opties": ["Mario Kart", "Rocket League", "Trackmania", "Hot Wheels Unleashed"],
     "correct": "B"
   },
   {
     "vraag": "Van welke game is dit logo?",
-    "afbeelding": "https://seeklogo.com/vector-logo/400865/fall-guys",
+    "afbeelding": "https://playhackshield.github.io/quiz/assets/fallguys.jpg",
     "opties": ["Among Us", "Stumble Guys", "Fall Guys", "Roblox"],
     "correct": "C"
   },
   {
     "vraag": "Van welke game is dit logo?",
-    "afbeelding": "https://seeklogo.com/vector-logo/369881/brawl-stars",
+    "afbeelding": "https://playhackshield.github.io/quiz/assets/brawlstars.jpg",
     "opties": ["Clash Royale", "Brawl Stars", "Clash of Clans", "Hay Day"],
     "correct": "B"
   },
   {
     "vraag": "Van welke game is dit logo?",
-    "afbeelding": "https://seeklogo.com/free-vector-logos/mario-kart",
+    "afbeelding": "https://playhackshield.github.io/quiz/assets/mariokart.jpg",
     "opties": ["Mario Kart", "Super Smash Bros.", "Mario Party", "F-Zero"],
     "correct": "A"
   },
   {
     "vraag": "Van welke game is dit logo?",
-    "afbeelding": "https://seeklogo.com/free-vector-logos/kirby",
+    "afbeelding": "https://playhackshield.github.io/quiz/assets/kirby.jpg",
     "opties": ["Yoshi", "Pikmin", "Kirby", "Luigi"],
     "correct": "C"
   }
