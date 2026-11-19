@@ -1,0 +1,62 @@
+[
+  {
+    "vraag": "Van welke app is dit logo?",
+    "afbeelding": "https://commons.wikimedia.org/wiki/File:YouTube_full-color_icon_(2017).svg",
+    "opties": ["YouTube", "Netflix", "TikTok", "Twitch"],
+    "correct": "A"
+  },
+  {
+    "vraag": "Van welke app is dit logo?",
+    "afbeelding": "https://commons.wikimedia.org/wiki/File:WhatsApp.svg",
+    "opties": ["Snapchat", "WhatsApp", "Telegram", "Signal"],
+    "correct": "B"
+  },
+  {
+    "vraag": "Van welke app is dit logo?",
+    "afbeelding": "https://commons.wikimedia.org/wiki/File:TikTok_logo.svg",
+    "opties": ["Instagram", "Spotify", "TikTok", "BeReal"],
+    "correct": "C"
+  },
+  {
+    "vraag": "Van welke app is dit logo?",
+    "afbeelding": "https://commons.wikimedia.org/wiki/File:Snapchat_logo.svg",
+    "opties": ["Snapchat", "Discord", "YouTube Kids", "Pinterest"],
+    "correct": "A"
+  },
+  {
+    "vraag": "Van welke app is dit logo?",
+    "afbeelding": "https://commons.wikimedia.org/wiki/File:Instagram_logo_2022.svg",
+    "opties": ["Facebook", "Instagram", "Snapchat", "TikTok"],
+    "correct": "B"
+  },
+  {
+    "vraag": "Van welke app is dit logo?",
+    "afbeelding": "https://commons.wikimedia.org/wiki/File:Discord_logo.svg",
+    "opties": ["Discord", "Twitch", "Roblox", "Zoom"],
+    "correct": "A"
+  },
+  {
+    "vraag": "Van welke app is dit logo?",
+    "afbeelding": "https://commons.wikimedia.org/wiki/File:Spotify_icon.svg",
+    "opties": ["WhatsApp", "Spotify", "Shazam", "Apple Music"],
+    "correct": "B"
+  },
+  {
+    "vraag": "Van welke app is dit logo?",
+    "afbeelding": "https://commons.wikimedia.org/wiki/File:Facebook_f_logo_(2021).svg",
+    "opties": ["X (Twitter)", "LinkedIn", "Facebook", "Messenger"],
+    "correct": "C"
+  },
+  {
+    "vraag": "Van welke app is dit logo?",
+    "afbeelding": "https://commons.wikimedia.org/wiki/File:Pinterest_Logo.svg",
+    "opties": ["Pinterest", "YouTube", "Netflix", "Airbnb"],
+    "correct": "A"
+  },
+  {
+    "vraag": "Van welke app is dit logo?",
+    "afbeelding": "https://commons.wikimedia.org/wiki/File:Twitch_Glitch_Logo_Purple.svg",
+    "opties": ["Discord", "Twitch", "Vimeo", "Teams"],
+    "correct": "B"
+  }
+]
